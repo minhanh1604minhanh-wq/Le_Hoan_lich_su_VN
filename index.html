@@ -9,24 +9,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS CƠ BẢN */
         @keyframes pageLoadFade { 0% { opacity: 0; filter: brightness(0) blur(5px); } 100% { opacity: 1; filter: brightness(1) blur(0); } }
         body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Lora', serif; background: radial-gradient(circle at center, #2a2a2a 0%, #0a0a0a 100%); color: #f4f4f4; animation: pageLoadFade 3s ease-out forwards; }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; transition: all 1.5s ease-in-out; }
         
-        #intro-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; background: rgba(10, 10, 10, 0.95); transition: opacity 1s ease, visibility 1s ease; }
+        #intro-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; background: rgba(10, 10, 10, 0.95); transition: opacity 0.8s ease, visibility 0.8s ease; }
         .intro-title { font-family: 'Playfair Display', serif; font-size: 3.2rem; color: #e5c158; letter-spacing: 4px; margin-bottom: 20px; text-shadow: 2px 2px 15px rgba(0,0,0,0.9); text-align: center; font-weight: 600; text-transform: uppercase; }
         
         #player-name-input { padding: 12px 20px; font-size: 1.1rem; border-radius: 25px; border: 2px solid #e5c158; background: rgba(0,0,0,0.6); color: #fff; text-align: center; margin-bottom: 30px; font-family: 'Lora', serif; width: 250px; outline: none; transition: box-shadow 0.3s;}
+        #player-name-input:focus { box-shadow: 0 0 15px rgba(229, 193, 88, 0.5); }
         
         .lang-container { display: flex; gap: 25px; margin-bottom: 30px; }
         .lang-btn { background: transparent; border: none; color: #8c8c8c; font-family: 'Lora', serif; font-size: 1.1rem; cursor: pointer; letter-spacing: 2px; transition: all 0.3s ease; padding: 5px 10px; position: relative; }
         .lang-btn.active { color: #e5c158; font-weight: 500; border-bottom: 1px solid #e5c158;} 
         #start-btn { background: transparent; border: 1px solid rgba(255, 255, 255, 0.7); color: #ffffff; padding: 14px 40px; border-radius: 30px; font-family: 'Lora', serif; font-size: 1.1rem; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        #start-btn:hover { background: #ffffff; color: #0a0a0a; border-color: #ffffff; }
+        #start-btn:hover { background: #ffffff; color: #0a0a0a; border-color: #ffffff; box-shadow: 0 4px 20px rgba(255,255,255,0.4); }
 
-        /* MẬT THƯ */
-        #scroll-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.9); transition: opacity 1.5s ease; opacity: 0; }
+        /* MẬT THƯ ĐÃ ĐƯỢC CHỈNH MƯỢT MÀ */
+        #scroll-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; display: none; justify-content: center; align-items: center; background: #0a0a0a; transition: opacity 1.5s ease; opacity: 0; }
         #parchment { position: relative; width: 85%; max-width: 900px; height: 75%; background: radial-gradient(circle at center, #d4b886 0%, #8b6e45 100%); box-shadow: 0 0 50px rgba(229, 193, 88, 0.2) inset, 0 20px 50px rgba(0,0,0,0.9); border-radius: 10px; overflow: hidden; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px; }
         #secret-text { font-family: 'Playfair Display', serif; color: #3d2314; font-size: 1.8rem; line-height: 1.8; opacity: 0; transition: opacity 2s ease; font-weight: 700; max-width: 80%; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); }
         #dust-canvas, #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2s ease;}
@@ -34,26 +34,29 @@
         .instruction-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; text-align: center; pointer-events: none; z-index: 10; transition: opacity 0.8s ease; }
         .highlight-text { font-family: 'Playfair Display', serif; font-size: 2rem; color: #ffeb99; text-shadow: 0 0 20px rgba(0,0,0,1), 2px 2px 5px rgba(0,0,0,1); line-height: 1.5; font-weight: bold; margin-bottom: 20px; }
         .highlight-subtext { font-family: 'Lora', serif; font-size: 1.4rem; color: #ffffff; text-shadow: 0 0 15px rgba(0,0,0,1); line-height: 1.5; }
-        #brush-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); border: 1px solid #e5c158; color: #e5c158; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-family: 'Lora', serif; z-index: 20; transition: all 0.3s; }
+        #brush-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); border: 1px solid #e5c158; color: #e5c158; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-family: 'Lora', serif; z-index: 20; transition: all 0.3s; box-shadow: 0 0 15px rgba(229,193,88,0.3); }
+        #brush-btn:hover { background: #e5c158; color: #000; box-shadow: 0 0 25px rgba(229,193,88,0.6); }
 
         /* ĐIỀU KHIỂN */
         #top-controls { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 990; opacity: 0; pointer-events: none; transition: all 0.5s ease; }
         #top-controls.show { opacity: 1; pointer-events: auto; }
-        .top-btn { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #e5c158; padding: 10px 22px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(5px); transition: all 0.3s ease; }
+        .top-btn { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #e5c158; padding: 10px 22px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(5px); white-space: nowrap; transition: all 0.3s ease; }
         
         #main-ui { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 90; opacity: 0; pointer-events: none; transition: opacity 1.2s ease 0.5s; width: 90vw; overflow-x: auto; justify-content: flex-start; padding-bottom: 10px; -ms-overflow-style: none; scrollbar-width: none; }
+        #main-ui::-webkit-scrollbar { display: none; }
         #main-ui.show-ui { opacity: 1; pointer-events: auto; }
-        .ui-btn { background: rgba(20, 20, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.2); color: #f4f4f4; padding: 12px 20px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(5px); white-space: nowrap; flex-shrink: 0; }
-        .ui-btn.active-state { border-color: #e5c158; color: #e5c158; background: rgba(30, 30, 30, 0.9); }
+        .ui-btn { background: rgba(20, 20, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.2); color: #f4f4f4; padding: 12px 20px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(5px); white-space: nowrap; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
+        .ui-btn:hover, .ui-btn.active-state { border-color: #e5c158; color: #e5c158; background: rgba(30, 30, 30, 0.9); }
         .qa-btn { background: linear-gradient(135deg, #e5c158 0%, #b89224 100%) !important; color: #0a0a0a !important; font-weight: bold; border: none !important; }
         .whatif-btn { background: linear-gradient(135deg, #6c3287 0%, #3f1954 100%) !important; box-shadow: 0 0 15px rgba(108, 50, 135, 0.4); }
         .roleplay-btn { background: linear-gradient(135deg, #b33939 0%, #7a1f1f 100%) !important; color: white!important;}
         @media (min-width: 769px) { #main-ui { width: auto; overflow-x: visible; justify-content: center; } .ui-btn { padding: 15px 25px; font-size: 1rem; } }
 
-        /* CLASS DÙNG CHUNG CHO PANEL */
+        /* CLASS DÙNG CHUNG CHO CÁC KHUNG PANEL */
         .game-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 500px; max-width: 95vw; background: rgba(20, 20, 20, 0.98); border-radius: 15px; padding: 30px 25px 25px; box-sizing: border-box; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; backdrop-filter: blur(15px); max-height: 90vh; overflow-y: auto; }
         .game-panel.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .panel-close-icon { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #8c8c8c; font-size: 1.8rem; cursor: pointer; padding: 0; }
+        .panel-close-icon { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #8c8c8c; font-size: 2rem; cursor: pointer; padding: 0; z-index: 10; transition: color 0.3s; }
+        .panel-close-icon:hover { color: #e5c158; }
         .progress-container { width: 100%; background-color: #333; border-radius: 10px; margin-bottom: 15px; display: none; overflow: hidden; height: 6px; }
         .progress-bar { width: 0%; height: 100%; transition: width 0.5s ease;}
         
@@ -101,11 +104,12 @@
         .rp-option-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         #rp-progress-container .progress-bar { background-color: #b33939; box-shadow: 0 0 10px #b33939;}
 
-        /* OVERLAYS BÌNH THƯỜNG */
-        .overlay-layer { position: fixed; top: 0; left: -100%; width: 380px; height: 100vh; background: rgba(15, 15, 15, 0.92); box-shadow: 5px 0 25px rgba(0,0,0,0.8); z-index: 100; transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1); padding: 40px 30px; box-sizing: border-box; border-right: 1px solid rgba(229, 193, 88, 0.2); overflow-y: auto; }
+        /* OVERLAYS BÌNH THƯỜNG (CÓ Z-INDEX CAO VÀ NÚT X) */
+        .overlay-layer { position: fixed; top: 0; left: -100%; width: 400px; max-width: 100vw; height: 100vh; background: rgba(15, 15, 15, 0.98); box-shadow: 5px 0 25px rgba(0,0,0,0.9); z-index: 1005; transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1); padding: 40px 30px; box-sizing: border-box; border-right: 1px solid rgba(229, 193, 88, 0.3); overflow-y: auto; }
         .overlay-layer.active { left: 0; }
-        .overlay-title { font-family: 'Playfair Display', serif; color: #e5c158; font-size: 1.8rem; margin-bottom: 20px; border-bottom: 1px solid rgba(229, 193, 88, 0.3); padding-bottom: 10px; }
-        .overlay-content { font-size: 0.95rem; line-height: 1.7; color: #cdcdcd; text-align: justify;} .overlay-content p { margin-bottom: 15px; }
+        .overlay-title { font-family: 'Playfair Display', serif; color: #e5c158; font-size: 1.8rem; margin-bottom: 20px; border-bottom: 1px solid rgba(229, 193, 88, 0.3); padding-bottom: 10px; padding-right: 30px;}
+        .overlay-content { font-size: 0.95rem; line-height: 1.7; color: #cdcdcd; text-align: justify;} 
+        .overlay-content p { margin-bottom: 15px; }
 
         /* HIDDEN PDF CONTAINER */
         #pdf-export-container { position: absolute; left: -9999px; top: 0; width: 800px; background: #fff; color: #000; padding: 40px; font-family: 'Lora', serif; }
@@ -199,6 +203,7 @@
     </div>
 
     <div id="overlayDetail" class="overlay-layer">
+        <button class="panel-close-icon" onclick="closeAllPopups()">&times;</button>
         <div class="lang-vi">
             <h2 class="overlay-title">Lê Hoàn</h2>
             <div class="overlay-content">
@@ -220,6 +225,7 @@
     </div>
 
     <div id="overlayGuide" class="overlay-layer">
+        <button class="panel-close-icon" onclick="closeAllPopups()">&times;</button>
         <div class="lang-vi">
             <h2 class="overlay-title">Hướng Dẫn Tương Tác</h2>
             <div class="overlay-content">
@@ -260,19 +266,27 @@
 
         window.onload = () => { let savedName = localStorage.getItem('lehoan_player_name'); if(savedName) playerNameInput.value = savedName; };
 
-        // ================= XỬ LÝ CLICK BẮT ĐẦU (KHÓA ÂM THANH TRIỆT ĐỂ) =================
+        // ================= XỬ LÝ CLICK BẮT ĐẦU (ĐÃ SỬA MƯỢT VÀ TẮT ÂM HOÀN TOÀN) =================
         startBtn.addEventListener('click', async () => {
             if(playerNameInput.value.trim() !== "") { playerName = playerNameInput.value.trim(); localStorage.setItem('lehoan_player_name', playerName); }
             
-            // Khóa mồm (Muted) âm thanh để mở khóa Autoplay mà không bị lọt tiếng
-            sweepAudio.muted = true; blowAudio.muted = true; currentTTSAudio.muted = true; audioVn.muted = true; audioEn.muted = true;
-            try { sweepAudio.play().then(()=>{sweepAudio.pause(); sweepAudio.muted=false;}); } catch(e){}
-            try { blowAudio.play().then(()=>{blowAudio.pause(); blowAudio.muted=false;}); } catch(e){}
-            try { currentTTSAudio.play().then(()=>{currentTTSAudio.pause(); currentTTSAudio.muted=false;}); } catch(e){}
-            try { audioVn.play().then(()=>{audioVn.pause(); audioVn.muted=false;}); } catch(e){}
-            try { audioEn.play().then(()=>{audioEn.pause(); audioEn.muted=false;}); } catch(e){}
+            // Hiển thị ngay lớp Mật thư ở dưới nền trước khi Intro biến mất (giúp mượt mà không lộ 3D)
+            scrollOverlay.style.display = 'flex';
+            scrollOverlay.style.opacity = '1';
+
+            // Khóa mồm (Muted/Volume=0) âm thanh để mở khóa Autoplay mà không bị lọt tiếng
+            sweepAudio.volume = 0; blowAudio.volume = 0; currentTTSAudio.volume = 0; audioVn.volume = 0; audioEn.volume = 0;
+            try { sweepAudio.play().then(()=>{sweepAudio.pause(); sweepAudio.volume = 0.6;}); } catch(e){}
+            try { blowAudio.play().then(()=>{blowAudio.pause(); blowAudio.volume = 0.8;}); } catch(e){}
+            try { currentTTSAudio.play().then(()=>{currentTTSAudio.pause(); currentTTSAudio.volume = 1.0;}); } catch(e){}
+            try { audioVn.play().then(()=>{audioVn.pause(); audioVn.volume = 0.15;}); } catch(e){}
+            try { audioEn.play().then(()=>{audioEn.pause(); audioEn.volume = 0.15;}); } catch(e){}
             
-            introScreen.style.opacity = '0'; setTimeout(() => { introScreen.style.display = 'none'; startParchmentSequence(); }, 1000);
+            introScreen.style.opacity = '0'; 
+            setTimeout(() => { 
+                introScreen.style.display = 'none'; 
+                startParchmentSequence(); 
+            }, 800);
         });
 
         // BỤI CŨ KỸ
@@ -282,10 +296,28 @@
         function spawnParticles(x, y, count, isBlowing) { for(let i=0; i<count; i++) { particles.push({ x: x + (Math.random() - 0.5) * 40, y: y + (Math.random() - 0.5) * 40, vx: (Math.random() - 0.5) * (isBlowing ? 15 : 6), vy: (Math.random() - 0.5) * (isBlowing ? 15 : 6) - (isBlowing ? 2 : 0), life: 1.0, decay: Math.random() * 0.05 + 0.02, size: Math.random() * 3 + 1.5, color: `rgba(180, 150, 110, ` }); } }
         function updateParticles() { pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); for(let i = particles.length - 1; i >= 0; i--) { let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life -= p.decay; if(p.life <= 0) { particles.splice(i, 1); } else { pCtx.fillStyle = p.color + p.life + `)`; pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); pCtx.fill(); } } if (!isRevealed || particles.length > 0) requestAnimationFrame(updateParticles); }
 
-        function startParchmentSequence() { document.getElementById('dust-title').textContent = dict[selectedLang].dustTitle; document.getElementById('dust-sub').textContent = dict[selectedLang].dustSub; document.getElementById('brush-btn').textContent = dict[selectedLang].brushBtn; document.getElementById('secret-text').textContent = dict[selectedLang].secretText; scrollOverlay.style.display = 'flex'; setTimeout(() => { scrollOverlay.style.opacity = '1'; }, 100); renderRealisticDust(); updateParticles(); navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => { let audioContext = new (window.AudioContext || window.webkitAudioContext)(); let analyser = audioContext.createAnalyser(); let microphone = audioContext.createMediaStreamSource(stream); microphone.connect(analyser); analyser.fftSize = 256; const dataArray = new Uint8Array(analyser.frequencyBinCount); function detectBlow() { if(isRevealed || isBrushingMode) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for(let i = 0; i < analyser.frequencyBinCount; i++) sum += dataArray[i]; if ((sum / analyser.frequencyBinCount) > 70) blowAwayDust(); blowAnimationFrame = requestAnimationFrame(detectBlow); } detectBlow(); }).catch(err => { enableBrushMode(); }); }
-        brushBtn.addEventListener('click', () => { enableBrushMode(); }); function enableBrushMode() { if(isBrushingMode) return; isBrushingMode = true; brushBtn.style.display = 'none'; if(blowAnimationFrame) cancelAnimationFrame(blowAnimationFrame); let isDrawing = false; let lastX = 0, lastY = 0; dustCanvas.addEventListener('mousedown', (e) => { isDrawing = true; lastX = e.offsetX; lastY = e.offsetY; }); dustCanvas.addEventListener('mouseup', () => isDrawing = false); dustCanvas.addEventListener('mousemove', (e) => { if(isDrawing && !isRevealed) { eraseCanvasSoftly(lastX, lastY, e.offsetX, e.offsetY); lastX = e.offsetX; lastY = e.offsetY; } }); dustCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const rect = dustCanvas.getBoundingClientRect(); lastX = e.touches[0].clientX - rect.left; lastY = e.touches[0].clientY - rect.top; }); dustCanvas.addEventListener('touchend', () => isDrawing = false); dustCanvas.addEventListener('touchmove', (e) => { if(isDrawing && !isRevealed) { e.preventDefault(); const rect = dustCanvas.getBoundingClientRect(); const currentX = e.touches[0].clientX - rect.left; const currentY = e.touches[0].clientY - rect.top; eraseCanvasSoftly(lastX, lastY, currentX, currentY); lastX = currentX; lastY = currentY; } }, { passive: false }); }
-        function eraseCanvasSoftly(x1, y1, x2, y2) { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 80; ctx.shadowBlur = 30; ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.shadowBlur = 0; spawnParticles(x2, y2, 3, false); if(sweepAudio.paused || sweepAudio.currentTime > 0.3) { sweepAudio.currentTime = 0; sweepAudio.play().catch(e=>e); } checkCanvasCompletion(); }
-        function blowAwayDust() { ctx.globalCompositeOperation = 'destination-out'; ctx.shadowBlur = 50; ctx.shadowColor = 'rgba(0,0,0,1)'; let randX = Math.random() * dustCanvas.width; let randY = Math.random() * dustCanvas.height; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(randX, randY, 60 + Math.random()*80, 0, Math.PI * 2); ctx.fill(); } ctx.shadowBlur = 0; spawnParticles(randX, randY, 15, true); if(blowAudio.paused || blowAudio.currentTime > 0.4) { blowAudio.currentTime = 0; blowAudio.play().catch(e=>e); } checkCanvasCompletion(); }
+        function startParchmentSequence() { 
+            document.getElementById('dust-title').textContent = dict[selectedLang].dustTitle; 
+            document.getElementById('dust-sub').textContent = dict[selectedLang].dustSub; 
+            document.getElementById('brush-btn').textContent = dict[selectedLang].brushBtn; 
+            document.getElementById('secret-text').textContent = dict[selectedLang].secretText; 
+            renderRealisticDust(); updateParticles(); 
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => { let audioContext = new (window.AudioContext || window.webkitAudioContext)(); let analyser = audioContext.createAnalyser(); let microphone = audioContext.createMediaStreamSource(stream); microphone.connect(analyser); analyser.fftSize = 256; const dataArray = new Uint8Array(analyser.frequencyBinCount); function detectBlow() { if(isRevealed || isBrushingMode) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for(let i = 0; i < analyser.frequencyBinCount; i++) sum += dataArray[i]; if ((sum / analyser.frequencyBinCount) > 70) blowAwayDust(); blowAnimationFrame = requestAnimationFrame(detectBlow); } detectBlow(); }).catch(err => { enableBrushMode(); }); 
+        }
+        
+        brushBtn.addEventListener('click', () => { enableBrushMode(); }); 
+        function enableBrushMode() { if(isBrushingMode) return; isBrushingMode = true; brushBtn.style.display = 'none'; if(blowAnimationFrame) cancelAnimationFrame(blowAnimationFrame); let isDrawing = false; let lastX = 0, lastY = 0; dustCanvas.addEventListener('mousedown', (e) => { isDrawing = true; lastX = e.offsetX; lastY = e.offsetY; }); dustCanvas.addEventListener('mouseup', () => isDrawing = false); dustCanvas.addEventListener('mousemove', (e) => { if(isDrawing && !isRevealed) { eraseCanvasSoftly(lastX, lastY, e.offsetX, e.offsetY); lastX = e.offsetX; lastY = e.offsetY; } }); dustCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const rect = dustCanvas.getBoundingClientRect(); lastX = e.touches[0].clientX - rect.left; lastY = e.touches[0].clientY - rect.top; }); dustCanvas.addEventListener('touchend', () => isDrawing = false); dustCanvas.addEventListener('touchmove', (e) => { if(isDrawing && !isRevealed) { e.preventDefault(); const rect = dustCanvas.getBoundingClientRect(); const currentX = e.touches[0].clientX - rect.left; const currentY = e.touches[0].clientY - rect.top; eraseCanvasSoftly(lastX, lastY, currentX, currentY); lastX = currentX; lastY = currentY; } }, { passive: false }); }
+        
+        function eraseCanvasSoftly(x1, y1, x2, y2) { 
+            ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 80; ctx.shadowBlur = 30; ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.shadowBlur = 0; spawnParticles(x2, y2, 3, false); 
+            if(sweepAudio.paused || sweepAudio.currentTime > 0.4) { sweepAudio.currentTime = 0; sweepAudio.play().catch(e=>{}); } 
+            checkCanvasCompletion(); 
+        }
+        function blowAwayDust() { 
+            ctx.globalCompositeOperation = 'destination-out'; ctx.shadowBlur = 50; ctx.shadowColor = 'rgba(0,0,0,1)'; let randX = Math.random() * dustCanvas.width; let randY = Math.random() * dustCanvas.height; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(randX, randY, 60 + Math.random()*80, 0, Math.PI * 2); ctx.fill(); } ctx.shadowBlur = 0; spawnParticles(randX, randY, 15, true); 
+            if(blowAudio.paused || blowAudio.currentTime > 0.4) { blowAudio.currentTime = 0; blowAudio.play().catch(e=>{}); } 
+            checkCanvasCompletion(); 
+        }
         let checkThrottle = 0; function checkCanvasCompletion() { checkThrottle++; if(checkThrottle % 10 !== 0) return; const imgData = ctx.getImageData(0, 0, dustCanvas.width, dustCanvas.height).data; let transparentCount = 0; for (let i = 3; i < imgData.length; i += 4) { if (imgData[i] < 128) transparentCount++; } if ((transparentCount / (imgData.length / 4)) * 100 > 50 && !isRevealed) { isRevealed = true; completeReveal(); } }
         
         function completeReveal() { 
@@ -295,7 +327,10 @@
         
         function startMainExperience() { 
             isMainExperienceStarted = true;
-            document.getElementById('main-ui').classList.add('show-ui'); document.getElementById('top-controls').classList.add('show'); langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; 
+            document.getElementById('main-ui').classList.add('show-ui'); 
+            document.getElementById('top-controls').classList.add('show'); 
+            langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; 
+            model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; 
             if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); 
         }
         
@@ -309,6 +344,8 @@
             body.classList.remove('info-active'); stopAllAITasks();
             if (isMainExperienceStarted && audioVn.paused && audioEn.paused) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         }
+
+        window.closeAllPopups = closeAllPopups; // Cấp quyền gọi toàn cầu cho nút X
 
         function stopAllAITasks() { 
             if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } 
@@ -496,6 +533,13 @@
             if (typingInterval) clearInterval(typingInterval); element.innerHTML = prefix; let i = 0;
             typingInterval = setInterval(() => { if (i < text.length) { element.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; resolve(); } }, 30);
         }
+
+        // Đóng các bảng khi nhấn bên ngoài
+        window.addEventListener('click', (e) => { 
+            if (!e.target.closest('.overlay-layer') && !e.target.closest('.game-panel') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#intro-screen')) { 
+                closeAllPopups(); 
+            } 
+        });
 
         // ================= XUẤT BÁO CÁO (PDF) =================
         function exportPDF(contentHTML, fileName) {
