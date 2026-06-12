@@ -409,53 +409,76 @@
 
 
         // ================= TRÒ CHƠI NHẬP VAI THẺ BÀI (CHỐNG LỖI VĂNG UI) =================
+        // ================= TRÒ CHƠI NHẬP VAI THẺ BÀI (ĐÃ SỬA LỖI ĐỤNG ĐỘ SONG SONG) =================
         const roleplayPanel = document.getElementById('roleplay-panel');
         const rpTurnText = document.getElementById('rp-turn-text');
         const rpNpcText = document.getElementById('rp-npc-text');
         const rpOptionsContainer = document.getElementById('rp-options-container');
         const rpLoading = document.getElementById('rp-loading');
 
-        let rpHistory = []; let rpTurn = 1;
+        let rpHistory = []; 
+        let rpTurn = 1;
+        let rpAbortController = null; // Tách riêng hệ thống Dừng mạng cho Nhập vai
 
         roleplayBtn.addEventListener('click', (e) => {
             e.stopPropagation(); closeAllPanels(); resetButtons();
             if (selectedLang === 'vi' && !audioVn.paused) { audioVn.pause(); isBgAudioPausedForAI = true; } else if (selectedLang === 'en' && !audioEn.paused) { audioEn.pause(); isBgAudioPausedForAI = true; }
             roleplayBtn.classList.add('active-state'); roleplayPanel.classList.add('active'); body.classList.remove('info-active');
-            rpHistory = []; rpTurn = 1; fetchRoleplayTurnData(null).then(data => renderRoleplayTurn(data)); 
+            
+            rpHistory = []; rpTurn = 1; 
+            rpNpcText.textContent = "Đang triệu hồi các quần thần...";
+            fetchRoleplayTurnData(null).then(data => renderRoleplayTurn(data)); 
         });
 
-        document.getElementById('rpCloseBtn').addEventListener('click', (e) => { e.stopPropagation(); closeAiSession(); });
+        document.getElementById('rpCloseBtn').addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            if(rpAbortController) rpAbortController.abort(); // Dừng nếu người dùng tắt ngang
+            closeAiSession(); 
+        });
 
+        // Hàm Tải Kịch bản (KHÔNG ĐƯỢC CHỨA LỆNH stopAllAITasks() ĐỂ TRÁNH SẬP GIỌNG NÓI VUA)
         async function fetchRoleplayTurnData(userChoiceText = null) {
-            rpOptionsContainer.innerHTML = ''; rpLoading.style.display = 'block'; rpNpcText.textContent = "Vận mệnh Đại Cồ Việt đang biến chuyển...";
+            rpOptionsContainer.innerHTML = ''; 
+            rpLoading.style.display = 'block'; 
+            
             if (userChoiceText) rpHistory.push({ role: "user", content: `Ta chọn: ${userChoiceText}` });
             
-            stopAllAITasks(); currentAbortController = new AbortController();
-            const response = await fetch('https://backend-api-le-hoan.onrender.com/roleplay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: rpHistory, turn: rpTurn }), signal: currentAbortController.signal });
+            if (rpAbortController) rpAbortController.abort();
+            rpAbortController = new AbortController();
+
+            const response = await fetch('https://backend-api-le-hoan.onrender.com/roleplay', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ history: rpHistory, turn: rpTurn }), 
+                signal: rpAbortController.signal 
+            });
             return await response.json();
         }
 
         async function handlePlayerChoice(choiceText, event) {
-            // LÁ CHẮN TỐI THƯỢNG: Ngăn trình duyệt tự động đóng bảng
             if(event) event.stopPropagation(); 
             
             document.querySelectorAll('.rp-option-btn').forEach(b => b.disabled = true);
-            rpLoading.style.display = 'block'; rpLoading.textContent = "Hoàng đế đang truyền chỉ...";
+            rpLoading.style.display = 'block'; 
+            rpLoading.textContent = "Hoàng đế đang truyền chỉ...";
 
             try {
-                // Bước 1: Gọi ngầm mạng lấy nội dung cho lượt tiếp theo
+                // CHẠY SONG SONG CHUẨN: Mạng tải kịch bản bằng rpAbortController, Giọng nói dùng currentAbortController
                 const nextTurnPromise = fetchRoleplayTurnData(choiceText);
 
-                // Bước 2: Vua cất tiếng nói (Hệ thống sẽ ĐỢI vua nói dứt lời)
+                // Đợi giọng nói Vua vang lên (khoảng 2-3 giây)
                 await fetchAndPlayTTS(`Trẫm quyết định: ${choiceText}`, 'onyx', null, null, "");
 
-                // Bước 3: Lấy đáp án đã tải ngầm xong ở Bước 1
+                // Ngay khi Vua nói xong, lấy kết quả kịch bản đã được tải ngầm
                 const data = await nextTurnPromise;
                 
-                // Bước 4: Chuyển vai, đổi giao diện và phát giọng NPC
                 renderRoleplayTurn(data);
 
-            } catch (err) { rpLoading.style.display = 'none'; rpNpcText.textContent = "Mất kết nối mạng."; }
+            } catch (err) { 
+                if (err.name === 'AbortError') return;
+                rpLoading.style.display = 'none'; 
+                rpNpcText.textContent = "Mất kết nối mạng. Hãy thử lại."; 
+            }
         }
 
         async function renderRoleplayTurn(data) {
@@ -472,10 +495,15 @@
                 return;
             }
 
-            data.choices.forEach((choice, index) => {
-                const btn = document.createElement('button'); btn.className = 'rp-option-btn'; btn.textContent = `${index + 1}. ${choice}`;
-                // LÁ CHẮN 2: Truyền event vào hàm để chặn bubble
-                btn.onclick = (e) => handlePlayerChoice(choice, e);
+            data.choices.forEach((choice) => {
+                // Lọc bỏ hoàn toàn các chữ cái A, B, C, D hoặc 1, 2, 3 và dấu gạch ngang rác ở đầu
+                let cleanChoice = choice.replace(/^([a-d1-4][\.\-\)]\s*|-\s*|\+\s*)/i, '');
+
+                const btn = document.createElement('button'); 
+                btn.className = 'rp-option-btn'; 
+                btn.textContent = cleanChoice; // Không hiện số 1,2,3 nữa cho đẹp
+                
+                btn.onclick = (e) => handlePlayerChoice(cleanChoice, e);
                 rpOptionsContainer.appendChild(btn);
             });
 
