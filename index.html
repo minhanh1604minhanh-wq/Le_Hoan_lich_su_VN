@@ -205,6 +205,23 @@
     <div id="overlayDetail" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Lê Hoàn</h2><div class="overlay-content"><p>Lê Hoàn (941 – 1005)...</p></div></div></div>
     <div id="overlayGuide" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Hướng Dẫn</h2><div class="overlay-content"><ul><li>Xoay, Cuộn, Di chuyển</li></ul></div></div></div>
 
+    <div id="roleplay-panel">
+        <button class="ai-close-icon" id="rpCloseBtn">&times;</button>
+        <div class="rp-header">HOÀNG ĐẾ LÊ HOÀN</div>
+        <div class="rp-turn" id="rp-turn-text">Lượt: 1 / 15</div>
+        
+        <div class="rp-npc-box" id="rp-npc-text">
+            Đang triệu hồi các quần thần, bệ hạ xin đợi trong giây lát...
+        </div>
+        
+        <div class="rp-options" id="rp-options-container">
+            </div>
+        <div id="rp-loading">Hoàng đế đang truyền chỉ, vận mệnh đang thay đổi...</div>
+    </div>
+
+    <div id="overlayDetail" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Lê Hoàn</h2><div class="overlay-content"><p>Lê Hoàn (941 – 1005)...</p></div></div></div>
+    <div id="overlayGuide" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Hướng Dẫn</h2><div class="overlay-content"><ul><li>Xoay, Cuộn, Di chuyển</li></ul></div></div></div>
+
     <script>
         const dict = {
             vi: { title: "MÔ HÌNH LÊ HOÀN", startBtn: "Bắt Đầu Trải Nghiệm", restartBtn: "Bắt đầu lại", detailBtn: "Hoàng Đế", guideBtn: "Hướng Dẫn", aiBtn: "AI Hỏi Đáp", closeBtn: "Đóng Lại", aiListening: "Đang lắng nghe...", aiConfirm: "Gửi đi?", aiProcessing: "Hệ thống đang suy nghĩ...", aiSpeaking: "Hệ thống đang trả lời...", aiError: "Có lỗi xảy ra.", aiNoSupport: "Trình duyệt không hỗ trợ Mic.", placeholder: "Nhập câu hỏi...", btnMicText: "🎙️ Bật Mic", prompts: ["Chiến thắng Bạch Đằng?", "Tư tưởng trị quốc?", "Lễ Tịch Điền?"], secretText: '"Hãy tìm hiểu tất cả về cuộc đời của ông!"', dustTitle: "Chiếu thư bị phủ đầy bụi thời gian.", dustSub: "Thổi vào micro hoặc quét đi lớp bụi ấy.", brushBtn: "🧹 Dùng chổi quét" },
@@ -256,7 +273,7 @@
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = true; }
 
-        // ================= XỬ LÝ ÂM THANH MỞ KHÓA & MẬT THƯ (GIỮ NGUYÊN) =================
+        // ================= XỬ LÝ ÂM THANH MỞ KHÓA & MẬT THƯ =================
         startBtn.addEventListener('click', async () => {
             sweepAudio.play().then(()=>sweepAudio.pause()).catch(e=>e); blowAudio.play().then(()=>blowAudio.pause()).catch(e=>e);
             introScreen.style.opacity = '0'; setTimeout(() => { introScreen.style.display = 'none'; startParchmentSequence(); }, 1000);
@@ -285,18 +302,21 @@
         function startMainExperience() { mainUi.classList.add('show-ui'); topControls.classList.add('show'); langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; tutorialHand.classList.add('show'); if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         model.addEventListener('mousedown', () => tutorialHand.classList.remove('show')); model.addEventListener('touchstart', () => tutorialHand.classList.remove('show'));
 
-        // ================= GIAO DIỆN CHUNG & HỎI ĐÁP =================
+        // ================= GIAO DIỆN CHUNG & ĐIỀU KHIỂN =================
         langBtns.forEach(btn => { btn.addEventListener('click', () => { langBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedLang = btn.getAttribute('data-lang'); document.getElementById('main-title').textContent = dict[selectedLang].title; startBtn.textContent = dict[selectedLang].startBtn; restartBtn.textContent = dict[selectedLang].restartBtn; document.querySelectorAll('.lang-vi').forEach(el => el.style.display = (selectedLang === 'vi') ? 'block' : 'none'); document.querySelectorAll('.lang-en').forEach(el => el.style.display = (selectedLang === 'en') ? 'block' : 'none'); promptChips.forEach((chip, index) => { chip.textContent = dict[selectedLang].prompts[index]; chip.setAttribute('data-query', dict[selectedLang].prompts[index]); }); }); });
         langToggleBtn.addEventListener('click', () => { audioVn.pause(); audioEn.pause(); stopAllAITasks(); selectedLang = selectedLang === 'vi' ? 'en' : 'vi'; langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; restartBtn.textContent = dict[selectedLang].restartBtn; resetButtons(); document.querySelectorAll('.lang-vi').forEach(el => el.style.display = (selectedLang === 'vi') ? 'block' : 'none'); document.querySelectorAll('.lang-en').forEach(el => el.style.display = (selectedLang === 'en') ? 'block' : 'none'); promptChips.forEach((chip, index) => { chip.textContent = dict[selectedLang].prompts[index]; chip.setAttribute('data-query', dict[selectedLang].prompts[index]); }); audioVn.currentTime = 0; audioEn.currentTime = 0; if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); });
         restartBtn.addEventListener('click', () => { window.location.reload(); });
 
-        function stopAllAITasks() { if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } if (typingInterval) { clearInterval(typingInterval); typingInterval = null; } if (currentAbortController) { currentAbortController.abort(); } }
+        function stopAllAITasks() { 
+            if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } 
+            if (typingInterval) { clearInterval(typingInterval); typingInterval = null; } 
+            if (currentAbortController) { currentAbortController.abort(); } 
+        }
         function resetButtons() { detailBtn.classList.remove('active-state'); guideBtn.classList.remove('active-state'); aiBtn.classList.remove('active-state'); whatifBtn.classList.remove('active-state'); roleplayBtn.classList.remove('active-state'); aiTextInput.placeholder = dict[selectedLang].placeholder; aiRetryBtn.textContent = dict[selectedLang].btnMicText; document.getElementById('overlayDetail').classList.remove('active'); document.getElementById('overlayGuide').classList.remove('active'); }
+        function closeAllPanels() { aiPanel.classList.remove('active'); document.getElementById('roleplay-panel').classList.remove('active'); document.getElementById('overlayDetail').classList.remove('active'); document.getElementById('overlayGuide').classList.remove('active'); }
 
         detailBtn.addEventListener('click', (e) => { e.stopPropagation(); if(recognition) recognition.stop(); closeAllPanels(); document.getElementById('overlayDetail').classList.toggle('active'); if (document.getElementById('overlayDetail').classList.contains('active')) { resetButtons(); detailBtn.classList.add('active-state'); body.classList.add('info-active'); } else { resetButtons(); body.classList.remove('info-active'); } });
         guideBtn.addEventListener('click', (e) => { e.stopPropagation(); if(recognition) recognition.stop(); closeAllPanels(); document.getElementById('overlayGuide').classList.toggle('active'); if (document.getElementById('overlayGuide').classList.contains('active')) { resetButtons(); guideBtn.classList.add('active-state'); body.classList.add('info-active'); } else { resetButtons(); body.classList.remove('info-active'); } });
-
-        function closeAllPanels() { aiPanel.classList.remove('active'); document.getElementById('roleplay-panel').classList.remove('active'); document.getElementById('overlayDetail').classList.remove('active'); document.getElementById('overlayGuide').classList.remove('active'); }
 
         whatifBtn.addEventListener('click', (e) => { e.stopPropagation(); openAIPanel(true); });
         aiBtn.addEventListener('click', (e) => { e.stopPropagation(); openAIPanel(false); });
@@ -310,20 +330,19 @@
             aiConfirmBtn.style.display = 'none';
         }
 
-        // ================= HIỆU ỨNG NHẢY SỐ (ĐA VŨ TRỤ) =================
         function runSimulationAnimation(finalSuccess, finalCasualty, callback) {
             simulationStats.style.display = 'flex'; aiStatus.textContent = "💻 Hệ thống đang tính toán mô phỏng..."; aiResultText.textContent = "Chạy thuật toán lịch sử lượng tử...";
             let startTime = Date.now(); let duration = 3000; 
-            let jumpInterval = setInterval(() => {
-                if (Date.now() - startTime > duration) { clearInterval(jumpInterval); statSuccess.textContent = finalSuccess + "%"; statCasualty.textContent = finalCasualty + "%"; callback(); return; }
-                statSuccess.textContent = Math.floor(Math.random() * 100) + "%"; statCasualty.textContent = Math.floor(Math.random() * 100) + "%";
-            }, 50); 
+            let jumpInterval = setInterval(() => { if (Date.now() - startTime > duration) { clearInterval(jumpInterval); statSuccess.textContent = finalSuccess + "%"; statCasualty.textContent = finalCasualty + "%"; callback(); return; } statSuccess.textContent = Math.floor(Math.random() * 100) + "%"; statCasualty.textContent = Math.floor(Math.random() * 100) + "%"; }, 50); 
         }
 
         aiSendTextBtn.addEventListener('click', (e) => { e.stopPropagation(); const txt = aiTextInput.value.trim(); if(!txt) return; aiConfirmBtn.style.display = 'none'; sendQuestionToChatGPT(txt); });
         aiTextInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') aiSendTextBtn.click(); });
         promptChips.forEach(chip => { chip.addEventListener('click', (e) => { e.stopPropagation(); const query = chip.getAttribute('data-query'); aiTextInput.value = query; sendQuestionToChatGPT(query); }); });
-        
+        aiRetryBtn.addEventListener('click', (e) => { e.stopPropagation(); if (!recognition) return; stopAllAITasks(); finalTranscript = ''; aiResultText.textContent = "..."; aiStatus.textContent = dict[selectedLang].aiListening; aiConfirmBtn.style.display = 'none'; recognition.lang = selectedLang === 'vi' ? 'vi-VN' : 'en-US'; try { recognition.start(); } catch(err) {} });
+        if (recognition) { recognition.onresult = (event) => { let interimTranscript = ''; let isFinal = false; finalTranscript = ''; for (let i = 0; i < event.results.length; ++i) { if (event.results[i].isFinal) { finalTranscript += event.results[i][0].transcript; isFinal = true; } else { interimTranscript += event.results[i][0].transcript; } } aiResultText.textContent = `"${finalTranscript + interimTranscript}"`; if (isFinal) { aiStatus.textContent = dict[selectedLang].aiConfirm; aiConfirmBtn.style.display = 'inline-block'; } }; }
+        aiConfirmBtn.addEventListener('click', (e) => { e.stopPropagation(); if(!finalTranscript) return; sendQuestionToChatGPT(finalTranscript); });
+
         async function sendQuestionToChatGPT(question) {
             aiImageContainer.style.display = 'none'; simulationStats.style.display = 'none';
             aiStatus.textContent = isWhatIfMode ? "🌌 Đang nạp dữ liệu vào Đa vũ trụ..." : dict[selectedLang].aiProcessing;
@@ -342,135 +361,127 @@
                         aiResultText.textContent = "Đang nạp giọng nói..."; await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, dict[selectedLang].aiSpeaking);
                     });
                 } else {
-                    aiResultText.textContent = "Đang nạp giọng nói...";
-                    await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, dict[selectedLang].aiSpeaking);
+                    aiResultText.textContent = "Đang nạp giọng nói..."; await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, dict[selectedLang].aiSpeaking);
                 }
             } catch (error) { if (error.name === 'AbortError') return; aiResultText.textContent = "Mất kết nối mạng."; aiStatus.textContent = "Error"; }
         }
 
-        // Tối ưu hàm gọi giọng nói (Voice: 'onyx' = Trầm, 'alloy' = Thanh)
+        // ================= XỬ LÝ ÂM THANH MƯỢT MÀ BẰNG PROMISE =================
         async function fetchAndPlayTTS(textToSpeak, voiceType, statusElement, textElement, speakingMsg) {
-            const cleanText = textToSpeak.replace(/[*#_]/g, ''); 
-            try {
-                const response = await fetch('https://backend-api-le-hoan.onrender.com/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: cleanText, voiceId: voiceType }), signal: currentAbortController.signal });
-                if (!response.ok) throw new Error("Lỗi tải âm thanh");
+            return new Promise(async (resolve) => {
+                const cleanText = textToSpeak.replace(/[*#_]/g, ''); 
+                try {
+                    const response = await fetch('https://backend-api-le-hoan.onrender.com/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: cleanText, voiceId: voiceType }), signal: currentAbortController.signal });
+                    if (!response.ok) { resolve(); return; }
 
-                const audioBlob = await response.blob(); const audioUrl = URL.createObjectURL(audioBlob);
-                stopAllAITasks(); currentTTSAudio.src = audioUrl; currentTTSAudio.volume = 1.0; 
-                currentTTSAudio.onended = () => { if(statusElement) statusElement.textContent = "Hoàn tất. Bạn có muốn hỏi thêm?"; };
-                
-                if(statusElement) statusElement.textContent = speakingMsg; 
-                if(textElement) textElement.textContent = ""; 
-                
-                currentTTSAudio.play().catch(e=>e);
-                
-                if(textElement) {
-                    let i = 0; typingInterval = setInterval(() => { if (i < textToSpeak.length) { textElement.textContent += textToSpeak.charAt(i); i++; textElement.scrollTop = textElement.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; } }, 35); 
-                }
-            } catch (err) { if (err.name === 'AbortError') return; if(statusElement) statusElement.textContent = "Lỗi âm thanh."; }
+                    const audioBlob = await response.blob(); const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    stopAllAITasks(); 
+                    currentTTSAudio.src = audioUrl; currentTTSAudio.volume = 1.0; 
+                    
+                    // Chỉ báo hiệu Xong khi âm thanh đã hoàn tất!
+                    currentTTSAudio.onended = () => { 
+                        if(statusElement) statusElement.textContent = "Hoàn tất."; 
+                        resolve(); 
+                    };
+                    
+                    if(statusElement) statusElement.textContent = speakingMsg; 
+                    if(textElement) textElement.textContent = ""; 
+                    
+                    currentTTSAudio.play().catch(e => { resolve(); });
+                    
+                    if(textElement) {
+                        let i = 0; typingInterval = setInterval(() => { if (i < textToSpeak.length) { textElement.textContent += textToSpeak.charAt(i); i++; textElement.scrollTop = textElement.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; } }, 35); 
+                    }
+                } catch (err) { resolve(); }
+            });
         }
 
         aiCloseBtn.addEventListener('click', (e) => { e.stopPropagation(); closeAiSession(); });
         function closeAiSession() { if(recognition) recognition.stop(); stopAllAITasks(); closeAllPanels(); resetButtons(); if (isBgAudioPausedForAI) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); isBgAudioPausedForAI = false; } }
 
-        window.addEventListener('click', (e) => { if (!e.target.closest('.overlay-layer') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#ai-panel') && !e.target.closest('#roleplay-panel') && !e.target.closest('#scroll-overlay') && !e.target.closest('#intro-screen')) { closeAllPanels(); resetButtons(); body.classList.remove('info-active'); } });
+        // MỌI NƠI ĐỀU KHÔNG LÀM VĂNG NÚT NẾU ĐÃ BẤM CHẶN
+        window.addEventListener('click', (e) => { 
+            if (!e.target.closest('.overlay-layer') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#ai-panel') && !e.target.closest('#roleplay-panel') && !e.target.closest('#scroll-overlay') && !e.target.closest('#intro-screen')) { 
+                closeAllPanels(); resetButtons(); body.classList.remove('info-active'); 
+            } 
+        });
 
-        // ================= TRÒ CHƠI NHẬP VAI THẺ BÀI (NEW) =================
+
+        // ================= TRÒ CHƠI NHẬP VAI THẺ BÀI (CHỐNG LỖI VĂNG UI) =================
         const roleplayPanel = document.getElementById('roleplay-panel');
         const rpTurnText = document.getElementById('rp-turn-text');
         const rpNpcText = document.getElementById('rp-npc-text');
         const rpOptionsContainer = document.getElementById('rp-options-container');
         const rpLoading = document.getElementById('rp-loading');
 
-        let rpHistory = [];
-        let rpTurn = 1;
+        let rpHistory = []; let rpTurn = 1;
 
         roleplayBtn.addEventListener('click', (e) => {
             e.stopPropagation(); closeAllPanels(); resetButtons();
             if (selectedLang === 'vi' && !audioVn.paused) { audioVn.pause(); isBgAudioPausedForAI = true; } else if (selectedLang === 'en' && !audioEn.paused) { audioEn.pause(); isBgAudioPausedForAI = true; }
-            
-            roleplayBtn.classList.add('active-state');
-            roleplayPanel.classList.add('active'); body.classList.remove('info-active');
-            
-            // Khởi tạo trò chơi mới
-            rpHistory = []; rpTurn = 1;
-            fetchRoleplayTurn(); 
+            roleplayBtn.classList.add('active-state'); roleplayPanel.classList.add('active'); body.classList.remove('info-active');
+            rpHistory = []; rpTurn = 1; fetchRoleplayTurnData(null).then(data => renderRoleplayTurn(data)); 
         });
 
         document.getElementById('rpCloseBtn').addEventListener('click', (e) => { e.stopPropagation(); closeAiSession(); });
 
-        async function fetchRoleplayTurn(userChoiceText = null) {
-            stopAllAITasks();
-            currentAbortController = new AbortController();
+        async function fetchRoleplayTurnData(userChoiceText = null) {
+            rpOptionsContainer.innerHTML = ''; rpLoading.style.display = 'block'; rpNpcText.textContent = "Vận mệnh Đại Cồ Việt đang biến chuyển...";
+            if (userChoiceText) rpHistory.push({ role: "user", content: `Ta chọn: ${userChoiceText}` });
             
-            rpOptionsContainer.innerHTML = '';
-            rpLoading.style.display = 'block';
-            rpNpcText.textContent = "Vận mệnh Đại Cồ Việt đang biến chuyển...";
+            stopAllAITasks(); currentAbortController = new AbortController();
+            const response = await fetch('https://backend-api-le-hoan.onrender.com/roleplay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: rpHistory, turn: rpTurn }), signal: currentAbortController.signal });
+            return await response.json();
+        }
 
-            if (userChoiceText) {
-                rpHistory.push({ role: "user", content: `Ta chọn: ${userChoiceText}` });
-            }
+        async function handlePlayerChoice(choiceText, event) {
+            // LÁ CHẮN TỐI THƯỢNG: Ngăn trình duyệt tự động đóng bảng
+            if(event) event.stopPropagation(); 
+            
+            document.querySelectorAll('.rp-option-btn').forEach(b => b.disabled = true);
+            rpLoading.style.display = 'block'; rpLoading.textContent = "Hoàng đế đang truyền chỉ...";
 
             try {
-                const response = await fetch('https://backend-api-le-hoan.onrender.com/roleplay', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ history: rpHistory, turn: rpTurn }),
-                    signal: currentAbortController.signal
-                });
+                // Bước 1: Gọi ngầm mạng lấy nội dung cho lượt tiếp theo
+                const nextTurnPromise = fetchRoleplayTurnData(choiceText);
 
-                const data = await response.json();
-                rpLoading.style.display = 'none';
+                // Bước 2: Vua cất tiếng nói (Hệ thống sẽ ĐỢI vua nói dứt lời)
+                await fetchAndPlayTTS(`Trẫm quyết định: ${choiceText}`, 'onyx', null, null, "");
 
-                if (data.error) { rpNpcText.textContent = "Hệ thống giả lập bị ngắt kết nối."; return; }
-
-                // Lưu lại lời NPC vào lịch sử
-                rpHistory.push({ role: "assistant", content: JSON.stringify(data) });
-
-                rpTurnText.textContent = `Lượt: ${rpTurn} / 15`;
+                // Bước 3: Lấy đáp án đã tải ngầm xong ở Bước 1
+                const data = await nextTurnPromise;
                 
-                // Phát giọng nói NPC (Alloy - Giọng thanh/Người hầu)
-                await fetchAndPlayTTS(data.npcDialogue, 'alloy', null, rpNpcText, "");
+                // Bước 4: Chuyển vai, đổi giao diện và phát giọng NPC
+                renderRoleplayTurn(data);
 
-                // Nếu Game Over
-                if (data.isGameOver || rpTurn > 15) {
-                    rpNpcText.innerHTML = `<strong>KẾT THÚC:</strong> ${data.npcDialogue}<br><br><em>Lý do: ${data.endReason}</em>`;
-                    return;
-                }
+            } catch (err) { rpLoading.style.display = 'none'; rpNpcText.textContent = "Mất kết nối mạng."; }
+        }
 
-                // Hiển thị các lựa chọn cho người chơi
-                data.choices.forEach((choice, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'rp-option-btn';
-                    btn.textContent = `${index + 1}. ${choice}`;
-                    btn.onclick = () => handlePlayerChoice(choice);
-                    rpOptionsContainer.appendChild(btn);
-                });
+        async function renderRoleplayTurn(data) {
+            rpLoading.style.display = 'none';
+            if (data.error) { rpNpcText.textContent = "Hệ thống giả lập bị ngắt kết nối."; return; }
 
-                rpTurn++;
+            rpHistory.push({ role: "assistant", content: JSON.stringify(data) });
+            rpTurnText.textContent = `Lượt: ${rpTurn} / 15`;
+            rpOptionsContainer.innerHTML = '';
 
-            } catch (error) {
-                if (error.name === 'AbortError') return;
-                rpLoading.style.display = 'none'; rpNpcText.textContent = "Mất kết nối mạng.";
+            if (data.isGameOver || rpTurn > 15) {
+                rpNpcText.innerHTML = `<strong>KẾT THÚC:</strong> ${data.npcDialogue}<br><br><em>Lý do: ${data.endReason}</em>`;
+                await fetchAndPlayTTS(data.npcDialogue, 'alloy', null, null, "");
+                return;
             }
+
+            data.choices.forEach((choice, index) => {
+                const btn = document.createElement('button'); btn.className = 'rp-option-btn'; btn.textContent = `${index + 1}. ${choice}`;
+                // LÁ CHẮN 2: Truyền event vào hàm để chặn bubble
+                btn.onclick = (e) => handlePlayerChoice(choice, e);
+                rpOptionsContainer.appendChild(btn);
+            });
+
+            rpTurn++;
+            await fetchAndPlayTTS(data.npcDialogue, 'alloy', null, rpNpcText, "");
         }
-
-        async function handlePlayerChoice(choiceText) {
-            // Vô hiệu hóa nút để tránh bấm 2 lần
-            document.querySelectorAll('.rp-option-btn').forEach(b => b.disabled = true);
-            rpLoading.style.display = 'block';
-            rpLoading.textContent = "Hoàng đế đang truyền chỉ...";
-
-            // XỬ LÝ SONG SONG: Vừa tạo giọng Vua, vừa tính diễn biến tiếp theo
-            // Giọng vua: Onyx (Giọng trầm ấm)
-            
-            const p1 = fetchAndPlayTTS(`Trẫm quyết định: ${choiceText}`, 'onyx', null, null, "");
-            const p2 = new Promise(resolve => setTimeout(resolve, 3000)); // Đợi khoảng 3s cho Vua nói xong trước khi gọi NPC
-
-            // Chạy ngầm việc nạp turn tiếp theo
-            await p1; 
-            fetchRoleplayTurn(choiceText);
-        }
-
     </script>
 </body>
 </html>
