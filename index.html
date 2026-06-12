@@ -38,6 +38,18 @@
         .highlight-subtext { font-family: 'Lora', serif; font-size: 1.4rem; color: #ffffff; text-shadow: 0 0 15px rgba(0,0,0,1); line-height: 1.5; }
         #brush-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); border: 1px solid #e5c158; color: #e5c158; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-family: 'Lora', serif; z-index: 20; transition: all 0.3s; }
 
+        /* --- NÚT AR THỰC TẾ TĂNG CƯỜNG --- */
+        .ar-button {
+            position: absolute; top: 30px; left: 30px; 
+            background: rgba(20, 20, 20, 0.8); color: #4CAF50; border: 1px solid #4CAF50;
+            border-radius: 20px; padding: 10px 22px; font-family: 'Lora', serif;
+            font-size: 0.95rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.3); transition: all 0.3s ease; z-index: 990;
+        }
+        .ar-button:hover { background: #4CAF50; color: #fff; box-shadow: 0 0 20px rgba(76, 175, 80, 0.6); transform: scale(1.05); }
+        .ar-button:active { background: #2E7D32; }
+        body.info-active .ar-button { opacity: 0; pointer-events: none; }
+
         #top-controls { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 990; opacity: 0; pointer-events: none; transition: all 0.5s ease; }
         #top-controls.show { opacity: 1; pointer-events: auto; }
         .top-btn { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #e5c158; padding: 10px 22px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(5px); transition: all 0.3s ease; }
@@ -86,7 +98,7 @@
         .ai-panel-btn { padding: 10px 20px; border-radius: 20px; font-family: 'Lora', serif; cursor: pointer; font-size: 0.9rem; border: none; } 
         .btn-confirm { background: rgba(255,255,255,0.2); color: #fff; } 
         .btn-retry { background: #b89224; color: #000; font-weight: bold; }
-        .btn-error-retry { background: #b33939; color: white; display: none; } /* Nút Thử lại khi lỗi mạng */
+        .btn-error-retry { background: #b33939; color: white; display: none; } 
         .btn-export { background: #4CAF50; color: white; display: none; width: 100%; margin-top: 10px;}
 
         /* KHUNG NHẬP VAI GAME */
@@ -111,7 +123,13 @@
     <audio id="blow-audio" src="blow.mp3" preload="auto"></audio>
 
     <div id="top-controls"><button id="lang-toggle-btn" class="top-btn">English</button><button id="restart-btn" class="top-btn">Bắt đầu lại</button></div>
-    <model-viewer id="myModel" src="Le_Hoan.glb" auto-rotate rotation-per-second="-12deg" camera-orbit="0deg 75deg 140%" camera-target="0m 0m 0m" shadow-intensity="1.5" bounds="tight" min-field-of-view="10deg" max-field-of-view="45deg"></model-viewer>
+    
+    <model-viewer id="myModel" src="Le_Hoan.glb" auto-rotate rotation-per-second="-12deg" camera-orbit="0deg 75deg 140%" camera-target="0m 0m 0m" shadow-intensity="1.5" bounds="tight" min-field-of-view="10deg" max-field-of-view="45deg"
+        ar ar-modes="webxr scene-viewer quick-look">
+        <button slot="ar-button" class="ar-button">
+            🧊 Không Gian Thực (AR)
+        </button>
+    </model-viewer>
 
     <div id="intro-screen">
         <h1 class="intro-title" id="main-title">LÊ HOÀN</h1>
@@ -264,7 +282,7 @@
             if (typingInterval) { clearInterval(typingInterval); typingInterval = null; } 
             if (currentAbortController) { currentAbortController.abort(); } 
             if (rpAbortController) { rpAbortController.abort(); }
-            stopProgressBar('ai-progress-container'); stopProgressBar('rp-progress-container');
+            stopProgressBar('ai-progress-container', 'ai-progress-bar'); stopProgressBar('rp-progress-container', 'rp-progress-bar');
         }
 
         detailBtn.addEventListener('click', (e) => { e.stopPropagation(); const wasActive = overlayDetail.classList.contains('active'); closeAllPopups(); if (!wasActive) { overlayDetail.classList.add('active'); detailBtn.classList.add('active-state'); body.classList.add('info-active'); } });
@@ -334,7 +352,7 @@
             aiStatus.textContent = isWhatIfMode ? "🌌 Đang nạp dữ liệu..." : "Đang kết nối...";
             aiResultText.textContent = "Đang kết nối..."; stopAllAITasks(); currentAbortController = new AbortController();
             
-            if(isWhatIfMode) startProgressBar('ai-progress-container', 'ai-progress-bar', 12); // Dụ kiến Đa vũ trụ tốn 12s
+            if(isWhatIfMode) startProgressBar('ai-progress-container', 'ai-progress-bar', 12);
 
             try {
                 const endpoint = isWhatIfMode ? '/whatif' : '/ask';
@@ -385,7 +403,7 @@
                     const audioBlob = await response.blob(); const audioUrl = URL.createObjectURL(audioBlob);
                     if (currentTTSAudio) currentTTSAudio.pause(); if (typingInterval) clearInterval(typingInterval); 
                     currentTTSAudio.src = audioUrl; currentTTSAudio.volume = 1.0; 
-                    currentTTSAudio.onended = () => { if(statusElement) statusElement.textContent = "Hoàn tất."; resolve(); };
+                    currentTTSAudio.onended = () => { if(statusElement && statusElement.id === 'aiStatus') statusElement.textContent = "Hoàn tất."; resolve(); };
                     currentTTSAudio.onerror = () => { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); };
                     
                     if(statusElement) statusElement.textContent = speakingMsg; 
@@ -425,7 +443,7 @@
 
         document.querySelector('.ai-close-icon').addEventListener('click', closeAllPopups);
         document.getElementById('rpCloseBtn').addEventListener('click', closeAllPopups);
-        window.addEventListener('click', (e) => { if (!e.target.closest('.overlay-layer') && !e.target.closest('.game-panel') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#intro-screen')) closeAllPopups(); });
+        window.addEventListener('click', (e) => { if (!e.target.closest('.overlay-layer') && !e.target.closest('.game-panel') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#intro-screen') && !e.target.closest('model-viewer')) closeAllPopups(); });
 
         rpErrorRetryBtn.addEventListener('click', (e) => { e.stopPropagation(); rpErrorRetryBtn.style.display = 'none'; fetchRoleplayTurnData(lastUserQuery).then(data => renderRoleplayTurn(data)).catch(e => { rpNpcText.textContent = "Lỗi mạng."; rpErrorRetryBtn.style.display = 'block'; }); });
 
@@ -462,8 +480,8 @@
 
             if (data.isGameOver || rpTurn > 15) {
                 rpNpcText.innerHTML = `<span style="color:#ff6b6b; font-weight:bold;">KẾT THÚC:</span> ${data.npcDialogue}<br><br><em style="color:#e5c158">${data.endReason}</em>`;
-                btnExportRoleplay.style.display = 'block'; // Hiện nút xuất báo cáo
-                sendToGoogleSheetsMock(playerName, "Nhập Vai", rpTurn); // Đẩy data mô phỏng
+                btnExportRoleplay.style.display = 'block'; 
+                sendToGoogleSheetsMock(playerName, "Nhập Vai", rpTurn); 
                 await fetchAndPlayTTS(data.npcDialogue + ". " + data.endReason, 'alloy', null, null, "");
                 return;
             }
@@ -502,15 +520,8 @@
         });
 
         // ================= GOOGLE SHEETS DASHBOARD MOCK =================
-        // Hướng dẫn giám khảo: "Em đã lập trình sẵn hàm đẩy dữ liệu (Webhook) về Google Forms/Sheets của giáo viên để theo dõi."
         function sendToGoogleSheetsMock(name, mode, scoreOrTurn) {
             console.log(`[Dashboard Giáo Viên] Đã ghi nhận học sinh ${name} hoàn thành chế độ ${mode} tại lượt ${scoreOrTurn}.`);
-            /* CODE THỰC TẾ ĐỂ GỬI QUA GOOGLE FORM:
-            fetch('https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse', {
-                method: 'POST', mode: 'no-cors',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `entry.123456=${name}&entry.789012=${mode}&entry.345678=${scoreOrTurn}`
-            }); */
         }
     </script>
 </body>
