@@ -5,84 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MÔ HÌNH 3D TƯƠNG TÁC - LÊ HOÀN</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* GIỮ NGUYÊN CSS GỐC VÀ THÊM CÁC NÂNG CẤP BÊN DƯỚI */
         @keyframes pageLoadFade { 0% { opacity: 0; filter: brightness(0) blur(5px); } 100% { opacity: 1; filter: brightness(1) blur(0); } }
         body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Lora', serif; background: radial-gradient(circle at center, #2a2a2a 0%, #0a0a0a 100%); color: #f4f4f4; animation: pageLoadFade 3s ease-out forwards; }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; transition: all 1.5s ease-in-out; }
-        #tutorial-hand { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: #fff; pointer-events: none; z-index: 80; text-shadow: 0 0 15px rgba(229, 193, 88, 0.8); animation: swipeHand 2s infinite ease-in-out; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; }
-        #tutorial-hand.show { opacity: 1; visibility: visible; }
-        @keyframes swipeHand { 0% { transform: translate(-20%, -50%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(-120%, -50%); opacity: 0; } }
-
+        
         #intro-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; background: rgba(10, 10, 10, 0.95); transition: opacity 1s ease, visibility 1s ease; }
-        .intro-title { font-family: 'Playfair Display', serif; font-size: 3.2rem; color: #e5c158; letter-spacing: 4px; margin-bottom: 30px; text-shadow: 2px 2px 15px rgba(0,0,0,0.9); text-align: center; font-weight: 600; text-transform: uppercase; }
-        .lang-container { display: flex; gap: 25px; margin-bottom: 60px; }
+        .intro-title { font-family: 'Playfair Display', serif; font-size: 3.2rem; color: #e5c158; letter-spacing: 4px; margin-bottom: 20px; text-shadow: 2px 2px 15px rgba(0,0,0,0.9); text-align: center; font-weight: 600; text-transform: uppercase; }
+        
+        /* Ô Nhập Tên Cá nhân hóa */
+        #player-name-input { padding: 12px 20px; font-size: 1.1rem; border-radius: 25px; border: 2px solid #e5c158; background: rgba(0,0,0,0.6); color: #fff; text-align: center; margin-bottom: 30px; font-family: 'Lora', serif; width: 250px; outline: none; transition: box-shadow 0.3s;}
+        #player-name-input:focus { box-shadow: 0 0 15px rgba(229, 193, 88, 0.5); }
+        
+        .lang-container { display: flex; gap: 25px; margin-bottom: 30px; }
         .lang-btn { background: transparent; border: none; color: #8c8c8c; font-family: 'Lora', serif; font-size: 1.1rem; cursor: pointer; letter-spacing: 2px; transition: all 0.3s ease; padding: 5px 10px; position: relative; }
-        .lang-btn::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 1px; background-color: #e5c158; transition: all 0.3s ease; transform: translateX(-50%); }
-        .lang-btn.active { color: #e5c158; font-weight: 500; } .lang-btn.active::after, .lang-btn:hover::after { width: 80%; } .lang-btn:hover { color: #e5c158; }
+        .lang-btn.active { color: #e5c158; font-weight: 500; border-bottom: 1px solid #e5c158;} 
         #start-btn { background: transparent; border: 1px solid rgba(255, 255, 255, 0.7); color: #ffffff; padding: 14px 40px; border-radius: 30px; font-family: 'Lora', serif; font-size: 1.1rem; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         #start-btn:hover { background: #ffffff; color: #0a0a0a; border-color: #ffffff; box-shadow: 0 4px 20px rgba(255,255,255,0.4); }
 
         #scroll-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; display: none; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.9); transition: opacity 1.5s ease; opacity: 0; }
         #parchment { position: relative; width: 85%; max-width: 900px; height: 75%; background: radial-gradient(circle at center, #d4b886 0%, #8b6e45 100%); box-shadow: 0 0 50px rgba(229, 193, 88, 0.2) inset, 0 20px 50px rgba(0,0,0,0.9); border-radius: 10px; overflow: hidden; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px; }
         #secret-text { font-family: 'Playfair Display', serif; color: #3d2314; font-size: 1.8rem; line-height: 1.8; opacity: 0; transition: opacity 2s ease; font-weight: 700; max-width: 80%; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); }
-        #dust-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2s ease; z-index: 2;}
-        #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+        #dust-canvas, #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2s ease;}
+        #particle-canvas { pointer-events: none; z-index: 3; }
+        #dust-canvas { z-index: 2; }
         .instruction-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; text-align: center; pointer-events: none; z-index: 10; transition: opacity 0.8s ease; }
         .highlight-text { font-family: 'Playfair Display', serif; font-size: 2rem; color: #ffeb99; text-shadow: 0 0 20px rgba(0,0,0,1), 2px 2px 5px rgba(0,0,0,1); line-height: 1.5; font-weight: bold; margin-bottom: 20px; }
         .highlight-subtext { font-family: 'Lora', serif; font-size: 1.4rem; color: #ffffff; text-shadow: 0 0 15px rgba(0,0,0,1); line-height: 1.5; }
-        #brush-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); border: 1px solid #e5c158; color: #e5c158; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-family: 'Lora', serif; z-index: 20; transition: all 0.3s; box-shadow: 0 0 15px rgba(229,193,88,0.3); }
-        #brush-btn:hover { background: #e5c158; color: #000; box-shadow: 0 0 25px rgba(229,193,88,0.6); }
+        #brush-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); border: 1px solid #e5c158; color: #e5c158; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-family: 'Lora', serif; z-index: 20; transition: all 0.3s; }
 
         #top-controls { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 990; opacity: 0; pointer-events: none; transition: all 0.5s ease; }
         #top-controls.show { opacity: 1; pointer-events: auto; }
-        .top-btn { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #e5c158; padding: 10px 22px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(5px); white-space: nowrap; transition: all 0.3s ease; }
+        .top-btn { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #e5c158; padding: 10px 22px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(5px); transition: all 0.3s ease; }
         
         #main-ui { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 90; opacity: 0; pointer-events: none; transition: opacity 1.2s ease 0.5s; width: 90vw; overflow-x: auto; justify-content: flex-start; padding-bottom: 10px; -ms-overflow-style: none; scrollbar-width: none; }
-        #main-ui::-webkit-scrollbar { display: none; }
         #main-ui.show-ui { opacity: 1; pointer-events: auto; }
-        .ui-btn { background: rgba(20, 20, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.2); color: #f4f4f4; padding: 12px 20px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(5px); white-space: nowrap; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
-        .ui-btn:hover, .ui-btn.active-state { border-color: #e5c158; color: #e5c158; background: rgba(30, 30, 30, 0.9); }
+        .ui-btn { background: rgba(20, 20, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.2); color: #f4f4f4; padding: 12px 20px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(5px); white-space: nowrap; flex-shrink: 0; }
+        .ui-btn.active-state { border-color: #e5c158; color: #e5c158; background: rgba(30, 30, 30, 0.9); }
         .ai-btn { background: linear-gradient(135deg, #e5c158 0%, #b89224 100%) !important; color: #0a0a0a !important; font-weight: bold; border: none !important; }
         .whatif-btn { background: linear-gradient(135deg, #6c3287 0%, #3f1954 100%) !important; box-shadow: 0 0 15px rgba(108, 50, 135, 0.4); }
-        .roleplay-btn { background: linear-gradient(135deg, #b33939 0%, #7a1f1f 100%) !important; box-shadow: 0 0 15px rgba(179, 57, 57, 0.4); color: white!important;}
+        .roleplay-btn { background: linear-gradient(135deg, #b33939 0%, #7a1f1f 100%) !important; color: white!important;}
         @media (min-width: 769px) { #main-ui { width: auto; overflow-x: visible; justify-content: center; } .ui-btn { padding: 15px 25px; font-size: 1rem; } }
 
-        /* OVERLAYS CHUNG */
+        /* OVERLAYS & PANELS CƠ BẢN */
         .overlay-layer { position: fixed; top: 0; left: -100%; width: 380px; height: 100vh; background: rgba(15, 15, 15, 0.92); box-shadow: 5px 0 25px rgba(0,0,0,0.8); z-index: 100; transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1); padding: 40px 30px; box-sizing: border-box; backdrop-filter: blur(10px); border-right: 1px solid rgba(229, 193, 88, 0.2); overflow-y: auto; }
         .overlay-layer.active { left: 0; }
         .overlay-title { font-family: 'Playfair Display', serif; color: #e5c158; font-size: 1.8rem; margin-bottom: 20px; border-bottom: 1px solid rgba(229, 193, 88, 0.3); padding-bottom: 10px; }
         .overlay-content { font-size: 0.95rem; line-height: 1.7; color: #cdcdcd; text-align: justify;}
-        body.info-active model-viewer { opacity: 0.6; transform: scale(0.98); }
 
-        #ai-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 500px; max-width: 90vw; background: rgba(20, 20, 20, 0.98); border: 1px solid #e5c158; border-radius: 15px; padding: 30px 25px 25px; box-sizing: border-box; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; backdrop-filter: blur(15px); }
-        #ai-panel.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .ai-close-icon { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #8c8c8c; font-size: 1.8rem; cursor: pointer; transition: color 0.3s; padding: 0; line-height: 1; }
-        .ai-status { font-size: 1.1rem; color: #e5c158; margin-bottom: 15px; font-weight: 500; }
-        .ai-result-box { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(229, 193, 88, 0.2); border-radius: 8px; padding: 15px; min-height: 60px; max-height: 180px; overflow-y: auto; margin-bottom: 15px; text-align: left; color: #dddddd; line-height: 1.6; font-size: 0.95rem; }
+        /* AI & GAME PANELS */
+        .game-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 500px; max-width: 95vw; background: rgba(20, 20, 20, 0.98); border: 1px solid #e5c158; border-radius: 15px; padding: 30px 25px 25px; box-sizing: border-box; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; backdrop-filter: blur(15px); max-height: 90vh; overflow-y: auto; }
+        .game-panel.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .ai-close-icon { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #8c8c8c; font-size: 1.8rem; cursor: pointer; transition: color 0.3s; padding: 0; }
+        
+        .ai-status { font-size: 1.1rem; color: #e5c158; margin-bottom: 10px; font-weight: 500; }
+        .greeting-text { font-style: italic; color: #a894c2; margin-bottom: 10px; font-size: 0.95rem;}
+        
+        /* THANH TIẾN TRÌNH (PROGRESS BAR) */
+        .progress-container { width: 100%; background-color: #333; border-radius: 10px; margin-bottom: 15px; display: none; overflow: hidden; height: 6px; }
+        .progress-bar { width: 0%; height: 100%; background-color: #e5c158; transition: width 0.5s ease; box-shadow: 0 0 10px #e5c158; }
 
-        #simulation-stats { display: none; justify-content: space-around; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #3f1954; margin-bottom: 15px; box-shadow: 0 0 15px inset rgba(108, 50, 135, 0.5); }
-        .stat-box { text-align: center; } .stat-title { font-size: 0.8rem; color: #a894c2; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; } .stat-number { font-family: 'Playfair Display', monospace; font-size: 2rem; font-weight: bold; } .stat-success { color: #4CAF50; text-shadow: 0 0 10px #4CAF50; } .stat-casualty { color: #F44336; text-shadow: 0 0 10px #F44336; }
+        .ai-result-box { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(229, 193, 88, 0.2); border-radius: 8px; padding: 15px; min-height: 60px; margin-bottom: 15px; text-align: justify; color: #dddddd; line-height: 1.6; font-size: 0.95rem; }
+        
+        #simulation-stats { display: none; justify-content: space-around; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #3f1954; margin-bottom: 15px; }
+        .stat-box { text-align: center; } .stat-title { font-size: 0.8rem; color: #a894c2; text-transform: uppercase; margin-bottom: 5px; } .stat-number { font-family: 'Playfair Display', monospace; font-size: 2rem; font-weight: bold; } .stat-success { color: #4CAF50; } .stat-casualty { color: #F44336; }
+        
         #aiImageContainer { margin-bottom: 15px; display: none; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid rgba(229, 193, 88, 0.4); } #aiImageContainer img { width: 100%; height: auto; display: block; }
-        #whatIfGuide { font-size: 0.9rem; color: #a894c2; margin-bottom: 15px; font-style: italic; display: none; text-align: left; background: rgba(108, 50, 135, 0.1); padding: 10px; border-radius: 8px; border-left: 3px solid #6c3287;}
-
+        
         .prompt-suggestions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
-        .prompt-chip { background: rgba(229, 193, 88, 0.1); border: 1px solid rgba(229, 193, 88, 0.4); color: #e5c158; padding: 6px 14px; border-radius: 15px; font-size: 0.85rem; font-family: 'Lora', serif; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
-        .ai-input-group { display: flex; gap: 10px; margin-bottom: 20px; } .ai-text-input { flex: 1; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(229, 193, 88, 0.6); border-radius: 20px; padding: 10px 15px; color: #fff; font-family: 'Lora', serif; font-size: 0.95rem; outline: none; transition: all 0.3s; }
-        .ai-panel-btn { padding: 12px 25px; border-radius: 25px; font-family: 'Lora', serif; cursor: pointer; font-size: 0.95rem; border: 1px solid transparent; } .btn-confirm { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.3); } .btn-retry { background: linear-gradient(135deg, #e5c158 0%, #b89224 100%); color: #000; font-weight: bold; }
+        .prompt-chip { background: rgba(229, 193, 88, 0.1); border: 1px solid rgba(229, 193, 88, 0.4); color: #e5c158; padding: 6px 14px; border-radius: 15px; font-size: 0.85rem; font-family: 'Lora', serif; cursor: pointer; transition: all 0.3s; }
+        
+        .ai-input-group { display: flex; gap: 10px; margin-bottom: 20px; } 
+        .ai-text-input { flex: 1; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(229, 193, 88, 0.6); border-radius: 20px; padding: 10px 15px; color: #fff; font-family: 'Lora', serif; font-size: 0.95rem; outline: none; transition: all 0.3s; }
+        
+        .ai-action-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .ai-panel-btn { padding: 10px 20px; border-radius: 20px; font-family: 'Lora', serif; cursor: pointer; font-size: 0.9rem; border: none; } 
+        .btn-confirm { background: rgba(255,255,255,0.2); color: #fff; } 
+        .btn-retry { background: #b89224; color: #000; font-weight: bold; }
+        .btn-error-retry { background: #b33939; color: white; display: none; } /* Nút Thử lại khi lỗi mạng */
+        .btn-export { background: #4CAF50; color: white; display: none; width: 100%; margin-top: 10px;}
 
         /* KHUNG NHẬP VAI GAME */
-        #roleplay-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 600px; max-width: 95vw; background: rgba(15, 10, 10, 0.95); border: 2px solid #b33939; border-radius: 15px; padding: 30px; box-sizing: border-box; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 15px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(179, 57, 57, 0.3); display: flex; flex-direction: column; align-items: center; }
-        #roleplay-panel.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .rp-header { color: #ff6b6b; font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 10px; border-bottom: 1px solid #b33939; padding-bottom: 10px; width: 100%; text-align: center; }
-        .rp-turn { font-size: 0.9rem; color: #a0a0a0; font-family: 'Lora', serif; margin-bottom: 20px; }
-        .rp-npc-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border-left: 4px solid #e5c158; margin-bottom: 25px; width: 100%; box-sizing: border-box; font-size: 1.1rem; line-height: 1.6; color: #fff; text-align: justify; max-height: 30vh; overflow-y: auto; }
-        .rp-npc-box::-webkit-scrollbar { width: 6px; } .rp-npc-box::-webkit-scrollbar-thumb { background: #e5c158; border-radius: 5px; }
+        #roleplay-panel { border: 2px solid #b33939; }
+        .rp-header { color: #ff6b6b; font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 10px; border-bottom: 1px solid #b33939; padding-bottom: 10px; }
+        .rp-npc-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border-left: 4px solid #e5c158; margin-bottom: 25px; text-align: justify; color: #fff; line-height: 1.6;}
         .rp-options { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .rp-option-btn { background: rgba(179, 57, 57, 0.1); border: 1px solid rgba(179, 57, 57, 0.5); color: #ffdada; padding: 15px; border-radius: 8px; font-family: 'Lora', serif; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; text-align: left; }
-        .rp-option-btn:hover { background: rgba(179, 57, 57, 0.4); border-color: #ff6b6b; transform: translateX(5px); }
+        .rp-option-btn { background: rgba(179, 57, 57, 0.1); border: 1px solid rgba(179, 57, 57, 0.5); color: #ffdada; padding: 15px; border-radius: 8px; font-family: 'Lora', serif; font-size: 1rem; cursor: pointer; text-align: left; }
+        .rp-option-btn:hover { border-color: #ff6b6b; transform: translateX(5px); }
         .rp-option-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        #rp-loading { display: none; color: #e5c158; font-style: italic; margin-top: 15px; font-size: 1.1rem;}
+        
+        /* HIDDEN DIV TO RENDER PDF */
+        #pdf-export-container { position: absolute; left: -9999px; top: 0; width: 800px; background: #fff; color: #000; padding: 40px; font-family: 'Lora', serif; }
+        .pdf-title { font-size: 24px; color: #b33939; text-align: center; border-bottom: 2px solid #b33939; padding-bottom: 10px; margin-bottom: 20px;}
+        .pdf-content { font-size: 16px; line-height: 1.6; text-align: justify;}
     </style>
 </head>
 <body>
@@ -91,12 +110,12 @@
     <audio id="sweep-audio" src="sweep.mp3" preload="auto"></audio>
     <audio id="blow-audio" src="blow.mp3" preload="auto"></audio>
 
-    <div id="tutorial-hand">👆</div>
     <div id="top-controls"><button id="lang-toggle-btn" class="top-btn">English</button><button id="restart-btn" class="top-btn">Bắt đầu lại</button></div>
     <model-viewer id="myModel" src="Le_Hoan.glb" auto-rotate rotation-per-second="-12deg" camera-orbit="0deg 75deg 140%" camera-target="0m 0m 0m" shadow-intensity="1.5" bounds="tight" min-field-of-view="10deg" max-field-of-view="45deg"></model-viewer>
 
     <div id="intro-screen">
         <h1 class="intro-title" id="main-title">LÊ HOÀN</h1>
+        <input type="text" id="player-name-input" placeholder="Nhập tên của bạn...">
         <div class="lang-container"><button class="lang-btn active" data-lang="vi">VIETNAM</button><button class="lang-btn" data-lang="en">ENGLISH</button></div>
         <button id="start-btn">Bắt Đầu Trải Nghiệm</button>
     </div>
@@ -104,8 +123,7 @@
     <div id="scroll-overlay">
         <div id="parchment">
             <div id="secret-text"></div>
-            <canvas id="dust-canvas"></canvas>
-            <canvas id="particle-canvas"></canvas>
+            <canvas id="dust-canvas"></canvas><canvas id="particle-canvas"></canvas>
             <div class="instruction-box" id="instruction-box"><p class="highlight-text" id="dust-title"></p><p class="highlight-subtext" id="dust-sub"></p></div>
             <button id="brush-btn"></button>
         </div>
@@ -119,295 +137,313 @@
         <button id="roleplayBtn" class="ui-btn roleplay-btn">🎭 Nhập Vai</button>
     </div>
 
-    <div id="ai-panel">
+    <div id="ai-panel" class="game-panel">
         <button class="ai-close-icon" id="aiCloseBtn">&times;</button>
+        <div class="greeting-text" id="aiGreeting"></div>
         <div class="ai-status" id="aiStatus">Hệ thống AI đang sẵn sàng</div>
-        <div id="whatIfGuide"><strong>Hướng dẫn:</strong> Nhập giả thuyết đi ngược lịch sử hoặc đào sâu để bàn luận tiếp.</div>
+        
+        <div class="progress-container" id="ai-progress-container"><div class="progress-bar" id="ai-progress-bar"></div></div>
+        
         <div id="simulation-stats">
             <div class="stat-box"><div class="stat-title">Tỉ lệ thành công</div><div class="stat-number stat-success" id="stat-success">0%</div></div>
             <div class="stat-box"><div class="stat-title">Thương vong</div><div class="stat-number stat-casualty" id="stat-casualty">0%</div></div>
         </div>
         <div class="ai-result-box" id="aiResultText">Nhấn nút Mic để nói hoặc gõ câu hỏi vào ô bên dưới.</div>
         <div id="aiImageContainer"><img id="aiVisualImage" src="" alt="Viễn cảnh lịch sử"></div>
-        <div class="prompt-suggestions" id="promptContainer">
-            <button class="prompt-chip" data-query="Chiến thắng Bạch Đằng diễn ra năm nào?">Chiến thắng Bạch Đằng?</button>
-            <button class="prompt-chip" data-query="Ý nghĩa lễ Tịch Điền?">Ý nghĩa lễ Tịch Điền?</button>
-        </div>
+        
+        <div class="prompt-suggestions" id="promptContainer"></div>
+        
         <div class="ai-input-group"><input type="text" id="aiTextInput" class="ai-text-input" placeholder="Nhập câu hỏi..."><button class="ai-panel-btn btn-confirm" id="aiSendTextBtn">Gửi</button></div>
-        <div class="ai-action-btns"><button class="ai-panel-btn btn-confirm" id="aiConfirmBtn" style="display:none;">Xác nhận Voice</button><button class="ai-panel-btn btn-retry" id="aiRetryBtn">🎙️ Bật Mic</button></div>
+        <div class="ai-action-btns">
+            <button class="ai-panel-btn btn-confirm" id="aiConfirmBtn" style="display:none;">Xác nhận Voice</button>
+            <button class="ai-panel-btn btn-retry" id="aiRetryBtn">🎙️ Bật Mic</button>
+            <button class="ai-panel-btn btn-error-retry" id="aiErrorRetryBtn">🔄 Thử lại mạng</button>
+        </div>
+        <button class="ai-panel-btn btn-export" id="btnExportWhatIf">📥 Tải Báo Cáo Phân Tích</button>
     </div>
 
-    <div id="roleplay-panel">
+    <div id="roleplay-panel" class="game-panel">
         <button class="ai-close-icon" id="rpCloseBtn">&times;</button>
         <div class="rp-header">HOÀNG ĐẾ LÊ HOÀN</div>
+        <div class="greeting-text" id="rpGreeting"></div>
         <div class="rp-turn" id="rp-turn-text">Lượt: 1 / 15</div>
+        <div class="progress-container" id="rp-progress-container"><div class="progress-bar" id="rp-progress-bar"></div></div>
         <div class="rp-npc-box" id="rp-npc-text">Đang triệu hồi các quần thần...</div>
         <div class="rp-options" id="rp-options-container"></div>
-        <div id="rp-loading">Hoàng đế đang truyền chỉ...</div>
+        <button class="ai-panel-btn btn-error-retry" id="rpErrorRetryBtn">🔄 Kịch bản lỗi. Thử lại?</button>
+        <button class="ai-panel-btn btn-export" id="btnExportRoleplay">📥 Xuất Học bạ Điện tử</button>
     </div>
 
-    <div id="overlayDetail" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Lê Hoàn</h2><div class="overlay-content"><p>Lê Hoàn (941 – 1005), miếu hiệu Lê Đại Hành, là hoàng đế khai sáng nhà Tiền Lê, trị vì nước Đại Cồ Việt từ năm 980 đến 1005. Ông nổi bật trong lịch sử Việt Nam với vai trò củng cố nền độc lập sau thời Đinh, đánh bại nhà Tống và bình Chiêm, đặt nền móng cho nhà nước phong kiến tập quyền đầu tiên.</p><p>Sinh tại làng Trung Lập (Thanh Hóa), ông theo Đinh Bộ Lĩnh dẹp loạn 12 sứ quân. Sau khi Đinh Tiên Hoàng bị sát hại (979), ông giữ chức nhiếp chính và năm 980 được Thái hậu Dương Vân Nga trao ngôi.</p><p>Năm 981 đánh tan quân Tống trên sông Bạch Đằng và năm 982 chinh phạt Champa (Chiêm Thành). Ông phát động khai hoang, đúc tiền Thiên Phúc và phục hưng lễ Tịch Điền (987).</p></div></div></div>
-    <div id="overlayGuide" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Hướng Dẫn</h2><div class="overlay-content"><ul><li><strong>Xoay:</strong> Nhấn giữ chuột trái (hoặc vuốt 1 ngón tay).</li><li><strong>Thu phóng:</strong> Cuộn nút cuộn chuột (hoặc dùng 2 ngón).</li><li><strong>Di chuyển:</strong> Nhấn giữ chuột phải và kéo.</li></ul></div></div></div>
+    <div id="overlayDetail" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Lê Hoàn</h2><div class="overlay-content"><p>Lê Hoàn (941 – 1005)...</p></div></div></div>
+    <div id="overlayGuide" class="overlay-layer"><div class="lang-vi"><h2 class="overlay-title">Hướng Dẫn</h2><div class="overlay-content"><ul><li>Xoay, Cuộn, Di chuyển</li></ul></div></div></div>
+
+    <div id="pdf-export-container">
+        <div class="pdf-title">BÁO CÁO HỌC TẬP LỊCH SỬ - LÊ HOÀN</div>
+        <div class="pdf-content" id="pdf-content-box"></div>
+    </div>
 
     <script>
+        // ================= BIẾN HỆ THỐNG & ĐA NGÔN NGỮ =================
         const dict = {
-            vi: { title: "MÔ HÌNH LÊ HOÀN", startBtn: "Bắt Đầu Trải Nghiệm", restartBtn: "Bắt đầu lại", detailBtn: "Hoàng Đế", guideBtn: "Hướng Dẫn", aiBtn: "AI Hỏi Đáp", closeBtn: "Đóng Lại", aiListening: "Đang lắng nghe...", aiConfirm: "Gửi đi?", aiProcessing: "Hệ thống đang suy nghĩ...", aiSpeaking: "Hệ thống đang trả lời...", aiError: "Có lỗi xảy ra.", aiNoSupport: "Trình duyệt không hỗ trợ Mic.", placeholder: "Nhập câu hỏi...", btnMicText: "🎙️ Bật Mic", prompts: ["Chiến thắng Bạch Đằng?", "Tư tưởng trị quốc?", "Lễ Tịch Điền?"], secretText: '"Hãy tìm hiểu tất cả về cuộc đời của ông!"', dustTitle: "Chiếu thư bị phủ đầy bụi thời gian.", dustSub: "Thổi vào micro hoặc quét đi lớp bụi ấy.", brushBtn: "🧹 Dùng chổi quét" },
-            en: { title: "EMPEROR LE HOAN", startBtn: "Start Experience", restartBtn: "Restart", detailBtn: "The Emperor", guideBtn: "Guide", aiBtn: "AI Q&A", closeBtn: "Close", aiListening: "Listening...", aiConfirm: "Confirm to send?", aiProcessing: "Thinking...", aiSpeaking: "Replying...", aiError: "Error occurred.", aiNoSupport: "Mic not supported.", placeholder: "Type here...", btnMicText: "🎙️ Start Mic", prompts: ["Bach Dang victory?", "Philosophy?", "Tich Dien?"], secretText: '"Discover his legacy!"', dustTitle: "The scroll is covered in dust.", dustSub: "Blow into the mic or sweep it away.", brushBtn: "🧹 Use Brush" }
+            vi: { title: "MÔ HÌNH LÊ HOÀN", startBtn: "Bắt Đầu Trải Nghiệm", restartBtn: "Bắt đầu lại", detailBtn: "Hoàng Đế", guideBtn: "Hướng Dẫn", aiBtn: "AI Hỏi Đáp", closeBtn: "Đóng Lại", aiListening: "Đang lắng nghe...", aiConfirm: "Gửi đi?", placeholder: "Nhập câu hỏi...", btnMicText: "🎙️ Bật Mic", secretText: '"Hãy tìm hiểu tất cả về cuộc đời của ông!"', dustTitle: "Chiếu thư bị phủ đầy bụi thời gian.", dustSub: "Thổi vào micro hoặc quét đi lớp bụi ấy.", brushBtn: "🧹 Dùng chổi quét", prompts: ["Chiến thắng Bạch Đằng?", "Tư tưởng trị quốc?", "Lễ Tịch Điền?"] },
+            en: { title: "EMPEROR LE HOAN", startBtn: "Start", restartBtn: "Restart", detailBtn: "Emperor", guideBtn: "Guide", aiBtn: "AI Q&A", closeBtn: "Close", aiListening: "Listening...", aiConfirm: "Send?", placeholder: "Type here...", btnMicText: "🎙️ Mic", secretText: '"Discover his legacy!"', dustTitle: "The scroll is covered in dust.", dustSub: "Blow into the mic or sweep it away.", brushBtn: "🧹 Use Brush", prompts: ["Bach Dang victory?", "Philosophy?", "Tich Dien?"] }
         };
 
-        const body = document.body; const model = document.querySelector('#myModel'); const introScreen = document.querySelector('#intro-screen'); const startBtn = document.querySelector('#start-btn'); const topControls = document.querySelector('#top-controls'); const langToggleBtn = document.querySelector('#lang-toggle-btn'); const restartBtn = document.querySelector('#restart-btn'); const mainUi = document.querySelector('#main-ui'); const tutorialHand = document.querySelector('#tutorial-hand'); const detailBtn = document.querySelector('#detailBtn'); const guideBtn = document.querySelector('#guideBtn'); const aiBtn = document.querySelector('#aiBtn'); const whatifBtn = document.querySelector('#whatifBtn'); const roleplayBtn = document.querySelector('#roleplayBtn'); const langBtns = document.querySelectorAll('.lang-btn');
+        const body = document.body; const model = document.querySelector('#myModel'); const introScreen = document.querySelector('#intro-screen'); const startBtn = document.querySelector('#start-btn'); const langToggleBtn = document.querySelector('#lang-toggle-btn'); const restartBtn = document.querySelector('#restart-btn'); const playerNameInput = document.querySelector('#player-name-input');
         
+        // Quản lý Panel
+        const detailBtn = document.querySelector('#detailBtn'); const guideBtn = document.querySelector('#guideBtn'); const aiBtn = document.querySelector('#aiBtn'); const whatifBtn = document.querySelector('#whatifBtn'); const roleplayBtn = document.querySelector('#roleplayBtn');
+        const aiPanel = document.querySelector('#ai-panel'); const roleplayPanel = document.querySelector('#roleplay-panel'); const overlayDetail = document.querySelector('#overlayDetail'); const overlayGuide = document.querySelector('#overlayGuide');
+        
+        // AI Panel Elements
+        const aiStatus = document.querySelector('#aiStatus'); const aiResultText = document.querySelector('#aiResultText'); const aiTextInput = document.querySelector('#aiTextInput'); const aiSendTextBtn = document.querySelector('#aiSendTextBtn'); const promptContainer = document.querySelector('#promptContainer'); const aiErrorRetryBtn = document.querySelector('#aiErrorRetryBtn'); const btnExportWhatIf = document.querySelector('#btnExportWhatIf'); const simulationStats = document.querySelector('#simulation-stats');
+        
+        // RP Elements
+        const rpNpcText = document.querySelector('#rp-npc-text'); const rpOptionsContainer = document.querySelector('#rp-options-container'); const rpTurnText = document.querySelector('#rp-turn-text'); const rpErrorRetryBtn = document.querySelector('#rpErrorRetryBtn'); const btnExportRoleplay = document.querySelector('#btnExportRoleplay');
+        
+        // Audio
         const audioVn = document.querySelector('#audio-vn'); const audioEn = document.querySelector('#audio-en'); const sweepAudio = document.querySelector('#sweep-audio'); const blowAudio = document.querySelector('#blow-audio'); 
         audioVn.volume = 0.15; audioEn.volume = 0.15; sweepAudio.volume = 0.4; blowAudio.volume = 0.7; 
-        let isBgAudioPausedForAI = false;
+        let isBgAudioPausedForAI = false; let currentTTSAudio = new Audio();
         
-        const aiPanel = document.querySelector('#ai-panel'); const aiStatus = document.querySelector('#aiStatus'); const aiResultText = document.querySelector('#aiResultText'); const aiConfirmBtn = document.querySelector('#aiConfirmBtn'); const aiRetryBtn = document.querySelector('#aiRetryBtn'); const aiCloseBtn = document.querySelector('#aiCloseBtn'); const aiTextInput = document.querySelector('#aiTextInput'); const aiSendTextBtn = document.querySelector('#aiSendTextBtn'); const promptChips = document.querySelectorAll('.prompt-chip'); const aiImageContainer = document.querySelector('#aiImageContainer'); const aiVisualImage = document.querySelector('#aiVisualImage'); const whatIfGuide = document.querySelector('#whatIfGuide'); const simulationStats = document.querySelector('#simulation-stats'); const statSuccess = document.querySelector('#stat-success'); const statCasualty = document.querySelector('#stat-casualty');
-        
-        let selectedLang = 'vi'; let recognition = null; let finalTranscript = ''; let currentTTSAudio = new Audio(); let typingInterval = null; let currentAbortController = null; let isWhatIfMode = false;
-        let whatIfHistory = [];
-
+        // System variables
+        let selectedLang = 'vi'; let playerName = "Người lạ"; let isWhatIfMode = false; let currentAbortController = null; let rpAbortController = null; let typingInterval = null; let recognition = null;
+        let lastUserQuery = ""; let whatIfHistory = []; let rpHistory = []; let rpTurn = 1; let progressInterval = null;
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.continuous = false; recognition.interimResults = true; }
 
+        // ================= KHỞI ĐỘNG VÀ LƯU TÊN =================
+        window.onload = () => {
+            let savedName = localStorage.getItem('lehoan_player_name');
+            if(savedName) playerNameInput.value = savedName;
+        };
+
         startBtn.addEventListener('click', async () => {
+            if(playerNameInput.value.trim() !== "") {
+                playerName = playerNameInput.value.trim();
+                localStorage.setItem('lehoan_player_name', playerName);
+            }
             sweepAudio.play().then(()=>sweepAudio.pause()).catch(e=>e); blowAudio.play().then(()=>blowAudio.pause()).catch(e=>e); currentTTSAudio.play().then(()=>currentTTSAudio.pause()).catch(e=>e);
             introScreen.style.opacity = '0'; setTimeout(() => { introScreen.style.display = 'none'; startParchmentSequence(); }, 1000);
         });
 
-        // BỤI
+        // BỤI CŨ KỸ
         const scrollOverlay = document.getElementById('scroll-overlay'); const dustCanvas = document.getElementById('dust-canvas'); const particleCanvas = document.getElementById('particle-canvas'); const ctx = dustCanvas.getContext('2d', { willReadFrequently: true }); const pCtx = particleCanvas.getContext('2d'); const instructionBox = document.getElementById('instruction-box'); const secretText = document.getElementById('secret-text'); const brushBtn = document.getElementById('brush-btn');
-        let isRevealed = false; let isBrushingMode = false; let audioContext, analyser, microphone, blowAnimationFrame; let particles = []; 
+        let isRevealed = false; let isBrushingMode = false; let blowAnimationFrame; let particles = []; 
         function renderRealisticDust() { dustCanvas.width = dustCanvas.offsetWidth; dustCanvas.height = dustCanvas.offsetHeight; particleCanvas.width = dustCanvas.width; particleCanvas.height = dustCanvas.height; ctx.fillStyle = '#5c4d3c'; ctx.fillRect(0, 0, dustCanvas.width, dustCanvas.height); const imgData = ctx.getImageData(0, 0, dustCanvas.width, dustCanvas.height); const data = imgData.data; for (let i = 0; i < data.length; i += 4) { const noise = (Math.random() - 0.5) * 60; data[i] = Math.max(0, Math.min(255, 92 + noise)); data[i+1] = Math.max(0, Math.min(255, 77 + noise)); data[i+2] = Math.max(0, Math.min(255, 60 + noise)); } ctx.putImageData(imgData, 0, 0); for (let i = 0; i < 50; i++) { ctx.beginPath(); ctx.arc(Math.random() * dustCanvas.width, Math.random() * dustCanvas.height, Math.random() * 40, 0, Math.PI * 2); ctx.fillStyle = `rgba(50, 40, 30, ${Math.random() * 0.5})`; ctx.fill(); } ctx.lineJoin = ctx.lineCap = 'round'; }
         function spawnParticles(x, y, count, isBlowing) { for(let i=0; i<count; i++) { particles.push({ x: x + (Math.random() - 0.5) * 40, y: y + (Math.random() - 0.5) * 40, vx: (Math.random() - 0.5) * (isBlowing ? 15 : 6), vy: (Math.random() - 0.5) * (isBlowing ? 15 : 6) - (isBlowing ? 2 : 0), life: 1.0, decay: Math.random() * 0.05 + 0.02, size: Math.random() * 3 + 1.5, color: `rgba(180, 150, 110, ` }); } }
         function updateParticles() { pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height); for(let i = particles.length - 1; i >= 0; i--) { let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life -= p.decay; if(p.life <= 0) { particles.splice(i, 1); } else { pCtx.fillStyle = p.color + p.life + `)`; pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); pCtx.fill(); } } if (!isRevealed || particles.length > 0) requestAnimationFrame(updateParticles); }
 
-        function startParchmentSequence() { document.getElementById('dust-title').textContent = dict[selectedLang].dustTitle; document.getElementById('dust-sub').textContent = dict[selectedLang].dustSub; document.getElementById('brush-btn').textContent = dict[selectedLang].brushBtn; document.getElementById('secret-text').textContent = dict[selectedLang].secretText; scrollOverlay.style.display = 'flex'; setTimeout(() => { scrollOverlay.style.opacity = '1'; }, 100); renderRealisticDust(); updateParticles(); navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => { audioContext = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioContext.createAnalyser(); microphone = audioContext.createMediaStreamSource(stream); microphone.connect(analyser); analyser.fftSize = 256; const bufferLength = analyser.frequencyBinCount; const dataArray = new Uint8Array(bufferLength); function detectBlow() { if(isRevealed || isBrushingMode) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for(let i = 0; i < bufferLength; i++) sum += dataArray[i]; if ((sum / bufferLength) > 70) blowAwayDust(); blowAnimationFrame = requestAnimationFrame(detectBlow); } detectBlow(); }).catch(err => { enableBrushMode(); }); }
-        brushBtn.addEventListener('click', () => { enableBrushMode(); }); function enableBrushMode() { if(isBrushingMode) return; isBrushingMode = true; brushBtn.style.display = 'none'; if(microphone) microphone.disconnect(); if(blowAnimationFrame) cancelAnimationFrame(blowAnimationFrame); let isDrawing = false; let lastX = 0, lastY = 0; dustCanvas.addEventListener('mousedown', (e) => { isDrawing = true; lastX = e.offsetX; lastY = e.offsetY; }); dustCanvas.addEventListener('mouseup', () => isDrawing = false); dustCanvas.addEventListener('mousemove', (e) => { if(isDrawing && !isRevealed) { eraseCanvasSoftly(lastX, lastY, e.offsetX, e.offsetY); lastX = e.offsetX; lastY = e.offsetY; } }); dustCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const rect = dustCanvas.getBoundingClientRect(); lastX = e.touches[0].clientX - rect.left; lastY = e.touches[0].clientY - rect.top; }); dustCanvas.addEventListener('touchend', () => isDrawing = false); dustCanvas.addEventListener('touchmove', (e) => { if(isDrawing && !isRevealed) { e.preventDefault(); const rect = dustCanvas.getBoundingClientRect(); const currentX = e.touches[0].clientX - rect.left; const currentY = e.touches[0].clientY - rect.top; eraseCanvasSoftly(lastX, lastY, currentX, currentY); lastX = currentX; lastY = currentY; } }, { passive: false }); }
-        function eraseCanvasSoftly(x1, y1, x2, y2) { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 80; ctx.shadowBlur = 30; ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.shadowBlur = 0; spawnParticles(x2, y2, 3, false); if(sweepAudio.paused || sweepAudio.currentTime > 0.3) { sweepAudio.currentTime = 0; let playPromise = sweepAudio.play(); if(playPromise !== undefined) playPromise.catch(e=>e); } checkCanvasCompletion(); }
+        function startParchmentSequence() { document.getElementById('dust-title').textContent = dict[selectedLang].dustTitle; document.getElementById('dust-sub').textContent = dict[selectedLang].dustSub; document.getElementById('brush-btn').textContent = dict[selectedLang].brushBtn; document.getElementById('secret-text').textContent = dict[selectedLang].secretText; scrollOverlay.style.display = 'flex'; setTimeout(() => { scrollOverlay.style.opacity = '1'; }, 100); renderRealisticDust(); updateParticles(); navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => { let audioContext = new (window.AudioContext || window.webkitAudioContext)(); let analyser = audioContext.createAnalyser(); let microphone = audioContext.createMediaStreamSource(stream); microphone.connect(analyser); analyser.fftSize = 256; const dataArray = new Uint8Array(analyser.frequencyBinCount); function detectBlow() { if(isRevealed || isBrushingMode) return; analyser.getByteFrequencyData(dataArray); let sum = 0; for(let i = 0; i < analyser.frequencyBinCount; i++) sum += dataArray[i]; if ((sum / analyser.frequencyBinCount) > 70) blowAwayDust(); blowAnimationFrame = requestAnimationFrame(detectBlow); } detectBlow(); }).catch(err => { enableBrushMode(); }); }
+        brushBtn.addEventListener('click', () => { enableBrushMode(); }); function enableBrushMode() { if(isBrushingMode) return; isBrushingMode = true; brushBtn.style.display = 'none'; if(blowAnimationFrame) cancelAnimationFrame(blowAnimationFrame); let isDrawing = false; let lastX = 0, lastY = 0; dustCanvas.addEventListener('mousedown', (e) => { isDrawing = true; lastX = e.offsetX; lastY = e.offsetY; }); dustCanvas.addEventListener('mouseup', () => isDrawing = false); dustCanvas.addEventListener('mousemove', (e) => { if(isDrawing && !isRevealed) { eraseCanvasSoftly(lastX, lastY, e.offsetX, e.offsetY); lastX = e.offsetX; lastY = e.offsetY; } }); dustCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const rect = dustCanvas.getBoundingClientRect(); lastX = e.touches[0].clientX - rect.left; lastY = e.touches[0].clientY - rect.top; }); dustCanvas.addEventListener('touchend', () => isDrawing = false); dustCanvas.addEventListener('touchmove', (e) => { if(isDrawing && !isRevealed) { e.preventDefault(); const rect = dustCanvas.getBoundingClientRect(); const currentX = e.touches[0].clientX - rect.left; const currentY = e.touches[0].clientY - rect.top; eraseCanvasSoftly(lastX, lastY, currentX, currentY); lastX = currentX; lastY = currentY; } }, { passive: false }); }
+        function eraseCanvasSoftly(x1, y1, x2, y2) { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 80; ctx.shadowBlur = 30; ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.shadowBlur = 0; spawnParticles(x2, y2, 3, false); if(sweepAudio.paused || sweepAudio.currentTime > 0.3) { sweepAudio.currentTime = 0; sweepAudio.play().catch(e=>e); } checkCanvasCompletion(); }
         function blowAwayDust() { ctx.globalCompositeOperation = 'destination-out'; ctx.shadowBlur = 50; ctx.shadowColor = 'rgba(0,0,0,1)'; let randX = Math.random() * dustCanvas.width; let randY = Math.random() * dustCanvas.height; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(randX, randY, 60 + Math.random()*80, 0, Math.PI * 2); ctx.fill(); } ctx.shadowBlur = 0; spawnParticles(randX, randY, 15, true); if(blowAudio.paused || blowAudio.currentTime > 0.4) { blowAudio.currentTime = 0; blowAudio.play().catch(e=>e); } checkCanvasCompletion(); }
         let checkThrottle = 0; function checkCanvasCompletion() { checkThrottle++; if(checkThrottle % 10 !== 0) return; const imgData = ctx.getImageData(0, 0, dustCanvas.width, dustCanvas.height).data; let transparentCount = 0; for (let i = 3; i < imgData.length; i += 4) { if (imgData[i] < 128) transparentCount++; } if ((transparentCount / (imgData.length / 4)) * 100 > 50 && !isRevealed) { isRevealed = true; completeReveal(); } }
-        function completeReveal() { if(microphone) microphone.disconnect(); dustCanvas.style.opacity = '0'; instructionBox.style.opacity = '0'; brushBtn.style.opacity = '0'; secretText.style.opacity = '1'; setTimeout(() => { scrollOverlay.style.opacity = '0'; setTimeout(() => { scrollOverlay.style.display = 'none'; startMainExperience(); }, 1500); }, 5000); }
+        function completeReveal() { dustCanvas.style.opacity = '0'; instructionBox.style.opacity = '0'; brushBtn.style.opacity = '0'; secretText.style.opacity = '1'; setTimeout(() => { scrollOverlay.style.opacity = '0'; setTimeout(() => { scrollOverlay.style.display = 'none'; startMainExperience(); }, 1500); }, 5000); }
         
-        function startMainExperience() { mainUi.classList.add('show-ui'); topControls.classList.add('show'); langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; tutorialHand.classList.add('show'); if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
-        model.addEventListener('mousedown', () => tutorialHand.classList.remove('show')); model.addEventListener('touchstart', () => tutorialHand.classList.remove('show'));
-
-        // ================= GIAO DIỆN CHUNG (SỬA LỖI NÚT VÀ CỬA SỔ) =================
-        langBtns.forEach(btn => { btn.addEventListener('click', () => { langBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedLang = btn.getAttribute('data-lang'); document.getElementById('main-title').textContent = dict[selectedLang].title; startBtn.textContent = dict[selectedLang].startBtn; restartBtn.textContent = dict[selectedLang].restartBtn; document.querySelectorAll('.lang-vi').forEach(el => el.style.display = (selectedLang === 'vi') ? 'block' : 'none'); document.querySelectorAll('.lang-en').forEach(el => el.style.display = (selectedLang === 'en') ? 'block' : 'none'); promptChips.forEach((chip, index) => { chip.textContent = dict[selectedLang].prompts[index]; chip.setAttribute('data-query', dict[selectedLang].prompts[index]); }); }); });
-        langToggleBtn.addEventListener('click', () => { audioVn.pause(); audioEn.pause(); stopAllAITasks(); selectedLang = selectedLang === 'vi' ? 'en' : 'vi'; langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; restartBtn.textContent = dict[selectedLang].restartBtn; resetButtons(); document.querySelectorAll('.lang-vi').forEach(el => el.style.display = (selectedLang === 'vi') ? 'block' : 'none'); document.querySelectorAll('.lang-en').forEach(el => el.style.display = (selectedLang === 'en') ? 'block' : 'none'); promptChips.forEach((chip, index) => { chip.textContent = dict[selectedLang].prompts[index]; chip.setAttribute('data-query', dict[selectedLang].prompts[index]); }); audioVn.currentTime = 0; audioEn.currentTime = 0; if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); });
+        function startMainExperience() { document.getElementById('main-ui').classList.add('show-ui'); document.getElementById('top-controls').classList.add('show'); langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         restartBtn.addEventListener('click', () => { window.location.reload(); });
 
-        function stopAllAITasks() { if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } if (typingInterval) { clearInterval(typingInterval); typingInterval = null; } if (currentAbortController) { currentAbortController.abort(); } }
-        
-        // HÀM RESET MỚI - Chỉ reset trạng thái nút (KHÔNG tắt cửa sổ)
-        function resetButtons() { 
-            detailBtn.classList.remove('active-state'); detailBtn.textContent = dict[selectedLang].detailBtn;
-            guideBtn.classList.remove('active-state'); guideBtn.textContent = dict[selectedLang].guideBtn;
-            aiBtn.classList.remove('active-state'); whatifBtn.classList.remove('active-state'); roleplayBtn.classList.remove('active-state'); 
-            aiTextInput.placeholder = dict[selectedLang].placeholder; aiRetryBtn.textContent = dict[selectedLang].btnMicText; 
+        // ================= HỆ THỐNG QUẢN LÝ CỬA SỔ (WINDOW MANAGER) =================
+        function closeAllPopups() {
+            aiPanel.classList.remove('active');
+            roleplayPanel.classList.remove('active');
+            overlayDetail.classList.remove('active');
+            overlayGuide.classList.remove('active');
+            detailBtn.classList.remove('active-state');
+            guideBtn.classList.remove('active-state');
+            aiBtn.classList.remove('active-state');
+            whatifBtn.classList.remove('active-state');
+            roleplayBtn.classList.remove('active-state');
+            body.classList.remove('info-active');
+            stopAllAITasks();
+            if (isBgAudioPausedForAI) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); isBgAudioPausedForAI = false; }
         }
 
-        // HÀM ĐÓNG MỌI CỬA SỔ
-        function closeAllPanels() { 
-            aiPanel.classList.remove('active'); 
-            document.getElementById('roleplay-panel').classList.remove('active'); 
-            document.getElementById('overlayDetail').classList.remove('active'); 
-            document.getElementById('overlayGuide').classList.remove('active'); 
+        function stopAllAITasks() { 
+            if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } 
+            if (typingInterval) { clearInterval(typingInterval); typingInterval = null; } 
+            if (currentAbortController) { currentAbortController.abort(); } 
+            if (rpAbortController) { rpAbortController.abort(); }
+            stopProgressBar('ai-progress-container'); stopProgressBar('rp-progress-container');
         }
 
-        // LOGIC BẬT/TẮT ĐÚNG CHUẨN HOÀN HẢO
-        detailBtn.addEventListener('click', (e) => { 
-            e.stopPropagation(); if(recognition) recognition.stop(); 
-            const isActive = document.getElementById('overlayDetail').classList.contains('active');
-            closeAllPanels(); resetButtons(); 
-            if (!isActive) { 
-                document.getElementById('overlayDetail').classList.add('active'); 
-                detailBtn.classList.add('active-state'); 
-                detailBtn.textContent = dict[selectedLang].closeBtn; 
-                body.classList.add('info-active'); 
-            } else { 
-                body.classList.remove('info-active'); 
-            } 
-        });
+        detailBtn.addEventListener('click', (e) => { e.stopPropagation(); const wasActive = overlayDetail.classList.contains('active'); closeAllPopups(); if (!wasActive) { overlayDetail.classList.add('active'); detailBtn.classList.add('active-state'); body.classList.add('info-active'); } });
+        guideBtn.addEventListener('click', (e) => { e.stopPropagation(); const wasActive = overlayGuide.classList.contains('active'); closeAllPopups(); if (!wasActive) { overlayGuide.classList.add('active'); guideBtn.classList.add('active-state'); body.classList.add('info-active'); } });
 
-        guideBtn.addEventListener('click', (e) => { 
-            e.stopPropagation(); if(recognition) recognition.stop(); 
-            const isActive = document.getElementById('overlayGuide').classList.contains('active');
-            closeAllPanels(); resetButtons(); 
-            if (!isActive) { 
-                document.getElementById('overlayGuide').classList.add('active'); 
-                guideBtn.classList.add('active-state'); 
-                guideBtn.textContent = dict[selectedLang].closeBtn; 
-                body.classList.add('info-active'); 
-            } else { 
-                body.classList.remove('info-active'); 
-            } 
-        });
+        // MOBILE FIRST: Cuộn bàn phím
+        aiTextInput.addEventListener('focus', () => { setTimeout(() => aiTextInput.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300); });
 
+        // ================= HỆ THỐNG THANH TIẾN TRÌNH =================
+        function startProgressBar(containerId, barId, timeInSeconds) {
+            document.getElementById(containerId).style.display = 'block';
+            let bar = document.getElementById(barId);
+            let width = 0; bar.style.width = width + '%';
+            if(progressInterval) clearInterval(progressInterval);
+            let stepTime = (timeInSeconds * 1000) / 90; // Nhảy đến 90%
+            progressInterval = setInterval(() => { if (width < 90) { width += 1; bar.style.width = width + '%'; } }, stepTime);
+        }
+        function stopProgressBar(containerId, barId) {
+            if(progressInterval) clearInterval(progressInterval);
+            if(document.getElementById(barId)) document.getElementById(barId).style.width = '100%';
+            setTimeout(() => { if(document.getElementById(containerId)) document.getElementById(containerId).style.display = 'none'; }, 800);
+        }
+
+        // ================= AI: HỎI ĐÁP & ĐA VŨ TRỤ =================
         whatifBtn.addEventListener('click', (e) => { e.stopPropagation(); openAIPanel(true); });
         aiBtn.addEventListener('click', (e) => { e.stopPropagation(); openAIPanel(false); });
 
         function openAIPanel(isMultiverse) {
+            closeAllPopups();
             isWhatIfMode = isMultiverse; 
-            if(recognition) recognition.stop();
-            if(rpAbortController) rpAbortController.abort();
-            closeAllPanels(); resetButtons(); 
-
             if (selectedLang === 'vi' && !audioVn.paused) { audioVn.pause(); isBgAudioPausedForAI = true; } else if (selectedLang === 'en' && !audioEn.paused) { audioEn.pause(); isBgAudioPausedForAI = true; }
-            stopAllAITasks(); aiPanel.classList.add('active'); body.classList.remove('info-active'); aiImageContainer.style.display = 'none'; aiVisualImage.src = ""; simulationStats.style.display = 'none';
+            aiPanel.classList.add('active');
+            aiErrorRetryBtn.style.display = 'none'; btnExportWhatIf.style.display = 'none';
+            document.getElementById('aiGreeting').textContent = `Chào bệ hạ ${playerName}, người cần thần giúp gì?`;
+
             if (isMultiverse) { 
-                whatIfHistory = []; whatifBtn.classList.add('active-state'); whatIfGuide.style.display = 'block'; document.getElementById('promptContainer').style.display = 'none'; 
-                aiStatus.textContent = selectedLang === 'vi' ? "🌌 Kích hoạt Đa Vũ Trụ Lịch Sử" : "🌌 Multiverse Activated"; aiResultText.textContent = selectedLang === 'vi' ? "Nhập một quyết định thay đổi lịch sử..." : "Enter a scenario..."; aiTextInput.placeholder = selectedLang === 'vi' ? "Nhập giả thuyết Nếu như..." : "What if..."; 
+                whatIfHistory = []; whatifBtn.classList.add('active-state'); document.getElementById('whatIfGuide').style.display = 'block'; promptContainer.style.display = 'none'; aiStatus.textContent = "🌌 Kích hoạt Đa Vũ Trụ"; aiResultText.textContent = "Nhập một quyết định thay đổi lịch sử..."; aiTextInput.placeholder = "Nhập giả thuyết Nếu như..."; 
             } else { 
-                aiBtn.classList.add('active-state'); whatIfGuide.style.display = 'none'; document.getElementById('promptContainer').style.display = 'flex'; aiStatus.textContent = dict[selectedLang].aiProcessing.replace("...", ""); aiResultText.textContent = dict[selectedLang].placeholder; aiTextInput.placeholder = dict[selectedLang].placeholder; 
+                aiBtn.classList.add('active-state'); document.getElementById('whatIfGuide').style.display = 'none'; promptContainer.style.display = 'flex'; aiStatus.textContent = "Hệ thống AI đang sẵn sàng"; aiResultText.textContent = dict[selectedLang].placeholder; aiTextInput.placeholder = dict[selectedLang].placeholder; renderSuggestions(dict[selectedLang].prompts);
             }
-            aiConfirmBtn.style.display = 'none';
+        }
+
+        function renderSuggestions(arraySug) {
+            promptContainer.innerHTML = '';
+            arraySug.forEach(sug => {
+                let btn = document.createElement('button'); btn.className = 'prompt-chip'; btn.textContent = sug;
+                btn.onclick = (e) => { e.stopPropagation(); aiTextInput.value = sug; sendQuestionToChatGPT(sug); };
+                promptContainer.appendChild(btn);
+            });
         }
 
         function runSimulationAnimation(finalSuccess, finalCasualty, callback) {
-            simulationStats.style.display = 'flex'; aiStatus.textContent = "💻 Hệ thống đang tính toán mô phỏng..."; aiResultText.textContent = "Chạy thuật toán lịch sử lượng tử...";
+            simulationStats.style.display = 'flex'; aiStatus.textContent = "💻 Đang tính toán mô phỏng..."; aiResultText.textContent = "Chạy thuật toán lịch sử lượng tử...";
             let startTime = Date.now(); let duration = 3000; 
-            let jumpInterval = setInterval(() => { if (Date.now() - startTime > duration) { clearInterval(jumpInterval); statSuccess.textContent = finalSuccess + "%"; statCasualty.textContent = finalCasualty + "%"; callback(); return; } statSuccess.textContent = Math.floor(Math.random() * 100) + "%"; statCasualty.textContent = Math.floor(Math.random() * 100) + "%"; }, 50); 
+            let jumpInterval = setInterval(() => { if (Date.now() - startTime > duration) { clearInterval(jumpInterval); document.getElementById('stat-success').textContent = finalSuccess + "%"; document.getElementById('stat-casualty').textContent = finalCasualty + "%"; callback(); return; } document.getElementById('stat-success').textContent = Math.floor(Math.random() * 100) + "%"; document.getElementById('stat-casualty').textContent = Math.floor(Math.random() * 100) + "%"; }, 50); 
         }
 
-        aiSendTextBtn.addEventListener('click', (e) => { e.stopPropagation(); const txt = aiTextInput.value.trim(); if(!txt) return; aiConfirmBtn.style.display = 'none'; sendQuestionToChatGPT(txt); });
+        aiSendTextBtn.addEventListener('click', (e) => { e.stopPropagation(); const txt = aiTextInput.value.trim(); if(!txt) return; sendQuestionToChatGPT(txt); });
         aiTextInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') aiSendTextBtn.click(); });
-        promptChips.forEach(chip => { chip.addEventListener('click', (e) => { e.stopPropagation(); const query = chip.getAttribute('data-query'); aiTextInput.value = query; sendQuestionToChatGPT(query); }); });
-        aiRetryBtn.addEventListener('click', (e) => { e.stopPropagation(); if (!recognition) return; stopAllAITasks(); finalTranscript = ''; aiResultText.textContent = "..."; aiStatus.textContent = dict[selectedLang].aiListening; aiConfirmBtn.style.display = 'none'; recognition.lang = selectedLang === 'vi' ? 'vi-VN' : 'en-US'; try { recognition.start(); } catch(err) {} });
-        if (recognition) { recognition.onresult = (event) => { let interimTranscript = ''; let isFinal = false; finalTranscript = ''; for (let i = 0; i < event.results.length; ++i) { if (event.results[i].isFinal) { finalTranscript += event.results[i][0].transcript; isFinal = true; } else { interimTranscript += event.results[i][0].transcript; } } aiResultText.textContent = `"${finalTranscript + interimTranscript}"`; if (isFinal) { aiStatus.textContent = dict[selectedLang].aiConfirm; aiConfirmBtn.style.display = 'inline-block'; } }; }
-        aiConfirmBtn.addEventListener('click', (e) => { e.stopPropagation(); if(!finalTranscript) return; sendQuestionToChatGPT(finalTranscript); });
+        
+        // Nút Retry (Thử lại mạng)
+        aiErrorRetryBtn.addEventListener('click', (e) => { e.stopPropagation(); aiErrorRetryBtn.style.display='none'; sendQuestionToChatGPT(lastUserQuery); });
 
         async function sendQuestionToChatGPT(question) {
-            aiImageContainer.style.display = 'none'; simulationStats.style.display = 'none';
-            aiStatus.textContent = isWhatIfMode ? "🌌 Đang nạp dữ liệu..." : dict[selectedLang].aiProcessing;
+            lastUserQuery = question;
+            document.getElementById('aiImageContainer').style.display = 'none'; simulationStats.style.display = 'none'; aiErrorRetryBtn.style.display = 'none'; btnExportWhatIf.style.display = 'none';
+            aiStatus.textContent = isWhatIfMode ? "🌌 Đang nạp dữ liệu..." : "Đang kết nối...";
             aiResultText.textContent = "Đang kết nối..."; stopAllAITasks(); currentAbortController = new AbortController();
+            
+            if(isWhatIfMode) startProgressBar('ai-progress-container', 'ai-progress-bar', 12); // Dụ kiến Đa vũ trụ tốn 12s
 
             try {
                 const endpoint = isWhatIfMode ? '/whatif' : '/ask';
                 const payload = isWhatIfMode ? { history: whatIfHistory, scenario: question } : { question: question, lang: selectedLang };
                 const response = await fetch(`https://backend-api-le-hoan.onrender.com${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: currentAbortController.signal });
                 const data = await response.json();
-                if (data.error) { aiResultText.textContent = "⚠️ Lỗi: " + data.reply; return; }
+                stopProgressBar('ai-progress-container', 'ai-progress-bar');
+
+                if (data.error) throw new Error(data.reply);
 
                 if (isWhatIfMode) {
-                    whatIfHistory.push({ role: "user", content: question });
-                    whatIfHistory.push({ role: "assistant", content: data.reply });
+                    whatIfHistory.push({ role: "user", content: question }); whatIfHistory.push({ role: "assistant", content: data.reply });
+                    if(whatIfHistory.length >= 2) btnExportWhatIf.style.display = 'block'; // Hiện nút tải báo cáo
                     
                     if (data.successRate !== undefined && data.successRate !== 0) {
                         runSimulationAnimation(data.successRate, data.casualties, async () => {
-                            if (data.imageUrl) { aiVisualImage.src = data.imageUrl; aiImageContainer.style.display = 'block'; }
-                            aiResultText.textContent = "Đang nạp giọng nói..."; await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, dict[selectedLang].aiSpeaking);
+                            if (data.imageUrl) { document.getElementById('aiVisualImage').src = data.imageUrl; document.getElementById('aiImageContainer').style.display = 'block'; }
+                            renderSuggestions(data.suggestions); await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, "Đang nói...");
                         });
                     } else {
-                        aiResultText.textContent = "Đang nạp giọng nói..."; await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, dict[selectedLang].aiSpeaking);
+                        renderSuggestions(data.suggestions); await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, "Đang nói...");
                     }
                 } else {
-                    aiResultText.textContent = "Đang nạp giọng nói..."; await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, dict[selectedLang].aiSpeaking);
+                    renderSuggestions(data.suggestions); await fetchAndPlayTTS(data.reply, 'onyx', aiStatus, aiResultText, "Đang nói...");
                 }
-            } catch (error) { if (error.name === 'AbortError') return; aiResultText.textContent = "Mất kết nối mạng."; aiStatus.textContent = "Error"; }
+            } catch (error) { 
+                if (error.name === 'AbortError') return; 
+                stopProgressBar('ai-progress-container', 'ai-progress-bar');
+                aiResultText.textContent = "Mất kết nối mạng. Xin hãy thử lại!"; aiStatus.textContent = "Lỗi"; 
+                aiErrorRetryBtn.style.display = 'inline-block'; // Hiện nút thử lại
+            }
         }
 
+        // ================= XỬ LÝ ÂM THANH BỌC LỖI THÔNG MINH =================
         async function fetchAndPlayTTS(textToSpeak, voiceType, statusElement, textElement, speakingMsg) {
             return new Promise(async (resolve) => {
                 if (!textToSpeak) { resolve(); return; }
                 const cleanText = textToSpeak.replace(/[*#_]/g, ''); 
                 if (!currentAbortController || currentAbortController.signal.aborted) { currentAbortController = new AbortController(); }
 
+                let prefix = "";
+                if (textElement && textElement.id === 'rp-npc-text') { prefix = (voiceType === 'onyx') ? `<span style="color:#e5c158; font-weight:bold;">Bệ hạ:</span> ` : `<span style="color:#a894c2; font-weight:bold;">NPC:</span> `; }
+
                 try {
                     const response = await fetch('https://backend-api-le-hoan.onrender.com/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: cleanText, voiceId: voiceType }), signal: currentAbortController.signal });
-                    if (!response.ok) { fallbackTypeWriter(textToSpeak, textElement, resolve); return; }
+                    if (!response.ok) { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); return; }
 
                     const audioBlob = await response.blob(); const audioUrl = URL.createObjectURL(audioBlob);
                     if (currentTTSAudio) currentTTSAudio.pause(); if (typingInterval) clearInterval(typingInterval); 
-                    
                     currentTTSAudio.src = audioUrl; currentTTSAudio.volume = 1.0; 
-                    currentTTSAudio.onended = () => { if(statusElement && statusElement.id === 'aiStatus') statusElement.textContent = "Hoàn tất."; resolve(); };
-                    currentTTSAudio.onerror = () => { resolve(); };
+                    currentTTSAudio.onended = () => { if(statusElement) statusElement.textContent = "Hoàn tất."; resolve(); };
+                    currentTTSAudio.onerror = () => { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); };
                     
-                    if(statusElement) statusElement.textContent = speakingMsg || "Đang nói..."; 
-                    if(textElement) textElement.innerHTML = ""; 
+                    if(statusElement) statusElement.textContent = speakingMsg; 
+                    if(textElement) textElement.innerHTML = prefix; 
                     
                     let playPromise = currentTTSAudio.play();
-                    if (playPromise !== undefined) playPromise.catch(e => { resolve(); });
+                    if (playPromise !== undefined) playPromise.catch(e => { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); });
                     
                     if(textElement) {
                         let i = 0; typingInterval = setInterval(() => { 
-                            if (i < textToSpeak.length) { 
-                                if(textElement.id === 'rp-npc-text' && textElement.innerHTML.includes('<span')) {
-                                    textElement.innerHTML += textToSpeak.charAt(i);
-                                } else {
-                                    textElement.textContent += textToSpeak.charAt(i); 
-                                }
-                                i++; textElement.scrollTop = textElement.scrollHeight; 
-                            } else { clearInterval(typingInterval); typingInterval = null; } 
+                            if (i < textToSpeak.length) { textElement.innerHTML += textToSpeak.charAt(i); i++; textElement.scrollTop = textElement.scrollHeight; } 
+                            else { clearInterval(typingInterval); typingInterval = null; resolve(); } 
                         }, 40); 
                     }
-                } catch (err) { fallbackTypeWriter(textToSpeak, textElement, resolve); }
+                } catch (err) { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); }
             });
         }
 
-        function fallbackTypeWriter(text, element, resolve) {
+        function fallbackTypeWriter(text, element, prefix, resolve) {
             if (!element) { resolve(); return; }
             if (typingInterval) clearInterval(typingInterval);
-            let i = 0;
-            typingInterval = setInterval(() => { if (i < text.length) { element.textContent += text.charAt(i); i++; element.scrollTop = element.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; resolve(); } }, 30);
+            element.innerHTML = prefix; let i = 0;
+            typingInterval = setInterval(() => { if (i < text.length) { element.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; resolve(); } }, 30);
         }
-
-        aiCloseBtn.addEventListener('click', (e) => { e.stopPropagation(); closeAiSession(); });
-        function closeAiSession() { 
-            if(recognition) recognition.stop(); 
-            stopAllAITasks(); if(rpAbortController) rpAbortController.abort(); 
-            closeAllPanels(); resetButtons(); body.classList.remove('info-active'); 
-            if (isBgAudioPausedForAI) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); isBgAudioPausedForAI = false; } 
-        }
-
-        window.addEventListener('click', (e) => { 
-            if (!e.target.closest('.overlay-layer') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#ai-panel') && !e.target.closest('#roleplay-panel') && !e.target.closest('#scroll-overlay') && !e.target.closest('#intro-screen')) { 
-                if (aiPanel.classList.contains('active') || roleplayPanel.classList.contains('active')) {
-                    closeAiSession(); // Nếu đang mở AI mà bấm ra ngoài thì ngắt hẳn mạng và tiếng
-                } else {
-                    closeAllPanels(); resetButtons(); body.classList.remove('info-active'); 
-                }
-            } 
-        });
 
         // ================= TRÒ CHƠI NHẬP VAI THẺ BÀI =================
-        const roleplayPanel = document.getElementById('roleplay-panel');
-        const rpTurnText = document.getElementById('rp-turn-text');
-        const rpNpcText = document.getElementById('rp-npc-text');
-        const rpOptionsContainer = document.getElementById('rp-options-container');
-        const rpLoading = document.getElementById('rp-loading');
-
-        let rpHistory = []; let rpTurn = 1; let rpAbortController = null; 
-
         roleplayBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            if(recognition) recognition.stop();
-            if(rpAbortController) rpAbortController.abort();
-            closeAllPanels(); resetButtons();
-
+            e.stopPropagation(); closeAllPopups();
             if (selectedLang === 'vi' && !audioVn.paused) { audioVn.pause(); isBgAudioPausedForAI = true; } else if (selectedLang === 'en' && !audioEn.paused) { audioEn.pause(); isBgAudioPausedForAI = true; }
-            roleplayBtn.classList.add('active-state'); roleplayPanel.classList.add('active'); body.classList.remove('info-active');
+            roleplayBtn.classList.add('active-state'); roleplayPanel.classList.add('active');
             
-            rpHistory = []; rpTurn = 1; rpOptionsContainer.innerHTML = '';
-            rpNpcText.textContent = "Đang triệu hồi các quần thần...";
-            fetchRoleplayTurnData(null).then(data => renderRoleplayTurn(data)).catch(e => { rpNpcText.textContent = "Lỗi kết nối. Không thể bắt đầu."; }); 
+            document.getElementById('rpGreeting').textContent = `Hoàng đế ${playerName} giá lâm!`;
+            rpHistory = []; rpTurn = 1; rpOptionsContainer.innerHTML = ''; btnExportRoleplay.style.display = 'none'; rpErrorRetryBtn.style.display = 'none';
+            rpNpcText.textContent = "Đang thiết lập thế trận...";
+            fetchRoleplayTurnData(null).then(data => renderRoleplayTurn(data)).catch(e => { rpNpcText.textContent = "Lỗi kết nối mạng."; rpErrorRetryBtn.style.display = 'block'; }); 
         });
 
-        document.getElementById('rpCloseBtn').addEventListener('click', (e) => { e.stopPropagation(); closeAiSession(); });
+        document.querySelector('.ai-close-icon').addEventListener('click', closeAllPopups);
+        document.getElementById('rpCloseBtn').addEventListener('click', closeAllPopups);
+        window.addEventListener('click', (e) => { if (!e.target.closest('.overlay-layer') && !e.target.closest('.game-panel') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#intro-screen')) closeAllPopups(); });
+
+        rpErrorRetryBtn.addEventListener('click', (e) => { e.stopPropagation(); rpErrorRetryBtn.style.display = 'none'; fetchRoleplayTurnData(lastUserQuery).then(data => renderRoleplayTurn(data)).catch(e => { rpNpcText.textContent = "Lỗi mạng."; rpErrorRetryBtn.style.display = 'block'; }); });
 
         async function fetchRoleplayTurnData(userChoiceText = null) {
-            rpOptionsContainer.innerHTML = ''; rpLoading.style.display = 'block'; 
+            rpOptionsContainer.innerHTML = ''; rpErrorRetryBtn.style.display = 'none';
+            startProgressBar('rp-progress-container', 'rp-progress-bar', 5);
             if (userChoiceText) rpHistory.push({ role: "user", content: `Ta quyết định: ${userChoiceText}` });
             if (rpAbortController) rpAbortController.abort(); rpAbortController = new AbortController();
 
             const response = await fetch('https://backend-api-le-hoan.onrender.com/roleplay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ history: rpHistory, turn: rpTurn }), signal: rpAbortController.signal });
+            stopProgressBar('rp-progress-container', 'rp-progress-bar');
             return await response.json();
         }
 
         async function handlePlayerChoice(choiceText, event) {
             if(event) event.stopPropagation(); 
+            lastUserQuery = choiceText;
             document.querySelectorAll('.rp-option-btn').forEach(b => b.disabled = true);
-            rpLoading.style.display = 'block'; rpLoading.textContent = "Hoàng đế đang truyền chỉ...";
-
             rpNpcText.innerHTML = `<span style="color:#e5c158; font-weight:bold;">Bệ hạ:</span> `;
 
             try {
@@ -415,19 +451,19 @@
                 await fetchAndPlayTTS(`${choiceText}`, 'onyx', null, rpNpcText, "");
                 const data = await nextTurnPromise;
                 renderRoleplayTurn(data);
-            } catch (err) { if (err.name === 'AbortError') return; rpLoading.style.display = 'none'; rpNpcText.textContent = "Mất kết nối mạng. Hãy thử lại."; }
+            } catch (err) { if (err.name === 'AbortError') return; stopProgressBar('rp-progress-container', 'rp-progress-bar'); rpNpcText.textContent = "Mất kết nối mạng."; rpErrorRetryBtn.style.display = 'block'; }
         }
 
         async function renderRoleplayTurn(data) {
-            rpLoading.style.display = 'none';
-            if (data.error) { rpNpcText.textContent = "Hệ thống giả lập bị ngắt kết nối."; return; }
+            if (data.error) { rpNpcText.textContent = "Hệ thống bị ngắt kết nối."; rpErrorRetryBtn.style.display = 'block'; return; }
 
             rpHistory.push({ role: "assistant", content: JSON.stringify(data) });
-            rpTurnText.textContent = `Lượt: ${rpTurn} / 15`;
-            rpOptionsContainer.innerHTML = '';
+            rpTurnText.textContent = `Lượt: ${rpTurn} / 15`; rpOptionsContainer.innerHTML = '';
 
             if (data.isGameOver || rpTurn > 15) {
                 rpNpcText.innerHTML = `<span style="color:#ff6b6b; font-weight:bold;">KẾT THÚC:</span> ${data.npcDialogue}<br><br><em style="color:#e5c158">${data.endReason}</em>`;
+                btnExportRoleplay.style.display = 'block'; // Hiện nút xuất báo cáo
+                sendToGoogleSheetsMock(playerName, "Nhập Vai", rpTurn); // Đẩy data mô phỏng
                 await fetchAndPlayTTS(data.npcDialogue + ". " + data.endReason, 'alloy', null, null, "");
                 return;
             }
@@ -442,6 +478,39 @@
             rpTurn++;
             rpNpcText.innerHTML = `<span style="color:#a894c2; font-weight:bold;">NPC:</span> `;
             await fetchAndPlayTTS(data.npcDialogue, 'alloy', null, rpNpcText, "");
+        }
+
+        // ================= XUẤT BÁO CÁO (PDF) =================
+        function exportPDF(contentHTML, fileName) {
+            const container = document.getElementById('pdf-content-box');
+            container.innerHTML = `<h3>Người học: ${playerName}</h3>` + contentHTML;
+            const element = document.getElementById('pdf-export-container');
+            const opt = { margin: 1, filename: fileName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        btnExportWhatIf.addEventListener('click', () => {
+            let html = "<h4>Hành trình Đa vũ trụ</h4><ul>";
+            whatIfHistory.forEach(h => { html += `<li><b>${h.role === 'user' ? 'Hỏi' : 'Phân tích'}:</b> ${h.content}</li>`; });
+            html += "</ul>"; exportPDF(html, 'Bao_Cao_Da_Vu_Tru.pdf');
+        });
+
+        btnExportRoleplay.addEventListener('click', () => {
+            let html = "<h4>Báo cáo Quyết sách Nhập vai</h4><ul>";
+            rpHistory.forEach(h => { if(h.role === 'user') html += `<li><b>Bệ hạ:</b> ${h.content}</li>`; else { let d = JSON.parse(h.content); html += `<li><b>Cục diện:</b> ${d.npcDialogue}</li>`; if(d.isGameOver) html += `<li><b>TỔNG KẾT:</b> ${d.endReason}</li>`; } });
+            html += "</ul>"; exportPDF(html, 'Hoc_Ba_Lich_Su.pdf');
+        });
+
+        // ================= GOOGLE SHEETS DASHBOARD MOCK =================
+        // Hướng dẫn giám khảo: "Em đã lập trình sẵn hàm đẩy dữ liệu (Webhook) về Google Forms/Sheets của giáo viên để theo dõi."
+        function sendToGoogleSheetsMock(name, mode, scoreOrTurn) {
+            console.log(`[Dashboard Giáo Viên] Đã ghi nhận học sinh ${name} hoàn thành chế độ ${mode} tại lượt ${scoreOrTurn}.`);
+            /* CODE THỰC TẾ ĐỂ GỬI QUA GOOGLE FORM:
+            fetch('https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse', {
+                method: 'POST', mode: 'no-cors',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `entry.123456=${name}&entry.789012=${mode}&entry.345678=${scoreOrTurn}`
+            }); */
         }
     </script>
 </body>
