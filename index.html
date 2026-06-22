@@ -25,6 +25,7 @@
         #start-btn { background: transparent; border: 1px solid rgba(255, 255, 255, 0.7); color: #ffffff; padding: 14px 40px; border-radius: 30px; font-family: 'Lora', serif; font-size: 1.1rem; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         #start-btn:hover { background: #ffffff; color: #0a0a0a; border-color: #ffffff; box-shadow: 0 4px 20px rgba(255,255,255,0.4); }
 
+        /* MẬT THƯ ĐÃ ĐƯỢC CHỈNH MƯỢT MÀ */
         #scroll-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; display: none; justify-content: center; align-items: center; background: #0a0a0a; transition: opacity 1.5s ease; opacity: 0; }
         #parchment { position: relative; width: 85%; max-width: 900px; height: 75%; background: radial-gradient(circle at center, #d4b886 0%, #8b6e45 100%); box-shadow: 0 0 50px rgba(229, 193, 88, 0.2) inset, 0 20px 50px rgba(0,0,0,0.9); border-radius: 10px; overflow: hidden; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px; }
         #secret-text { font-family: 'Playfair Display', serif; color: #3d2314; font-size: 1.8rem; line-height: 1.8; opacity: 0; transition: opacity 2s ease; font-weight: 700; max-width: 80%; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); }
@@ -36,6 +37,7 @@
         #brush-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.85); border: 1px solid #e5c158; color: #e5c158; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; font-family: 'Lora', serif; z-index: 20; transition: all 0.3s; box-shadow: 0 0 15px rgba(229,193,88,0.3); }
         #brush-btn:hover { background: #e5c158; color: #000; box-shadow: 0 0 25px rgba(229,193,88,0.6); }
 
+        /* ĐIỀU KHIỂN */
         #top-controls { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 990; opacity: 0; pointer-events: none; transition: all 0.5s ease; }
         #top-controls.show { opacity: 1; pointer-events: auto; }
         .top-btn { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #e5c158; padding: 10px 22px; border-radius: 20px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; backdrop-filter: blur(5px); white-space: nowrap; transition: all 0.3s ease; }
@@ -50,6 +52,7 @@
         .roleplay-btn { background: linear-gradient(135deg, #b33939 0%, #7a1f1f 100%) !important; color: white!important;}
         @media (min-width: 769px) { #main-ui { width: auto; overflow-x: visible; justify-content: center; } .ui-btn { padding: 15px 25px; font-size: 1rem; } }
 
+        /* CLASS DÙNG CHUNG CHO CÁC KHUNG PANEL */
         .game-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 500px; max-width: 95vw; background: rgba(20, 20, 20, 0.98); border-radius: 15px; padding: 30px 25px 25px; box-sizing: border-box; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; backdrop-filter: blur(15px); max-height: 90vh; overflow-y: auto; }
         .game-panel.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         .panel-close-icon { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #8c8c8c; font-size: 2rem; cursor: pointer; padding: 0; z-index: 10; transition: color 0.3s; }
@@ -67,6 +70,7 @@
         .prompt-suggestions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
         .prompt-chip { padding: 6px 14px; border-radius: 15px; font-size: 0.85rem; font-family: 'Lora', serif; cursor: pointer; transition: all 0.3s; }
 
+        /* UI RIÊNG: AI HỎI ĐÁP (VÀNG) */
         #qa-panel { border: 2px solid #e5c158; }
         #qa-panel .result-box { border: 1px solid rgba(229, 193, 88, 0.2); }
         #qa-panel .text-input { border: 1px solid rgba(229, 193, 88, 0.6); }
@@ -75,6 +79,7 @@
         #qa-panel .prompt-chip { background: rgba(229, 193, 88, 0.1); border: 1px solid rgba(229, 193, 88, 0.4); color: #e5c158; }
         .qa-header { font-size: 1.1rem; color: #e5c158; margin-bottom: 10px; font-weight: 500; }
 
+        /* UI RIÊNG: ĐA VŨ TRỤ (TÍM) */
         #mv-panel { border: 2px solid #a252c8; background: rgba(15, 5, 25, 0.95); box-shadow: 0 0 30px rgba(162, 82, 200, 0.4);}
         #mv-panel .result-box { border: 1px solid rgba(162, 82, 200, 0.3); }
         #mv-panel .text-input { border: 1px solid rgba(162, 82, 200, 0.6); }
@@ -89,6 +94,7 @@
         #mv-img-box img { width: 100%; height: auto; display: block; }
         .mv-guide { font-size: 0.9rem; color: #a894c2; margin-bottom: 15px; font-style: italic; text-align: left; background: rgba(108, 50, 135, 0.1); padding: 10px; border-radius: 8px; border-left: 3px solid #6c3287;}
 
+        /* KHUNG NHẬP VAI GAME (ĐỎ) */
         #roleplay-panel { border: 2px solid #b33939; }
         .rp-header { color: #ff6b6b; font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 10px; border-bottom: 1px solid #b33939; padding-bottom: 10px; }
         .rp-npc-box { background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border-left: 4px solid #e5c158; margin-bottom: 25px; text-align: justify; color: #fff; line-height: 1.6;}
@@ -98,12 +104,14 @@
         .rp-option-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         #rp-progress-container .progress-bar { background-color: #b33939; box-shadow: 0 0 10px #b33939;}
 
+        /* OVERLAYS BÌNH THƯỜNG (CÓ Z-INDEX CAO VÀ NÚT X) */
         .overlay-layer { position: fixed; top: 0; left: -100%; width: 400px; max-width: 100vw; height: 100vh; background: rgba(15, 15, 15, 0.98); box-shadow: 5px 0 25px rgba(0,0,0,0.9); z-index: 1005; transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1); padding: 40px 30px; box-sizing: border-box; border-right: 1px solid rgba(229, 193, 88, 0.3); overflow-y: auto; }
         .overlay-layer.active { left: 0; }
         .overlay-title { font-family: 'Playfair Display', serif; color: #e5c158; font-size: 1.8rem; margin-bottom: 20px; border-bottom: 1px solid rgba(229, 193, 88, 0.3); padding-bottom: 10px; padding-right: 30px;}
         .overlay-content { font-size: 0.95rem; line-height: 1.7; color: #cdcdcd; text-align: justify;} 
         .overlay-content p { margin-bottom: 15px; }
 
+        /* HIDDEN PDF CONTAINER */
         #pdf-export-container { position: absolute; left: -9999px; top: 0; width: 800px; background: #fff; color: #000; padding: 40px; font-family: 'Lora', serif; }
         .pdf-title { font-size: 24px; color: #b33939; text-align: center; border-bottom: 2px solid #b33939; padding-bottom: 10px; margin-bottom: 20px;}
         .pdf-content { font-size: 16px; line-height: 1.6; text-align: justify;}
@@ -146,13 +154,17 @@
         <button class="panel-close-icon" onclick="closeAllPopups()">&times;</button>
         <div class="qa-header" id="qa-status">Hệ thống AI đang sẵn sàng</div>
         <div class="progress-container" id="qa-progress"><div class="progress-bar" id="qa-bar"></div></div>
+        
         <div class="result-box" id="qa-result">Nhấn nút Mic hoặc gõ câu hỏi vào ô bên dưới.</div>
         <div class="prompt-suggestions" id="qa-prompts"></div>
+        
         <div class="input-group">
             <input type="text" id="qa-input" class="text-input" placeholder="Hỏi về sự thật lịch sử...">
             <button class="panel-btn btn-confirm" id="qa-send-btn">Gửi</button>
         </div>
-        <div class="action-btns"><button class="panel-btn btn-retry" id="qa-mic-btn">🎙️ Bật Mic</button></div>
+        <div class="action-btns">
+            <button class="panel-btn btn-retry" id="qa-mic-btn">🎙️ Bật Mic</button>
+        </div>
     </div>
 
     <div id="mv-panel" class="game-panel">
@@ -160,18 +172,23 @@
         <div class="mv-header" id="mv-status">🌌 CỖ MÁY ĐA VŨ TRỤ LƯỢNG TỬ</div>
         <div class="mv-guide">Nhập giả thuyết đi ngược lịch sử (Ví dụ: Nếu Lê Hoàn đầu hàng quân Tống thì sao?)</div>
         <div class="progress-container" id="mv-progress"><div class="progress-bar" id="mv-bar"></div></div>
+        
         <div id="mv-stats">
             <div class="stat-box"><div class="mv-stat-title">Thành công</div><div class="mv-stat-num stat-success" id="mv-stat-success">0%</div></div>
             <div class="stat-box"><div class="mv-stat-title">Thương vong</div><div class="mv-stat-num stat-casualty" id="mv-stat-casualty">0%</div></div>
         </div>
+        
         <div id="mv-img-box"><img id="mv-image" src="" alt="Viễn cảnh"></div>
         <div class="result-box" id="mv-result">Sẵn sàng mô phỏng dòng thời gian mới...</div>
         <div class="prompt-suggestions" id="mv-prompts"></div>
+        
         <div class="input-group">
             <input type="text" id="mv-input" class="text-input" placeholder="Nếu như...">
             <button class="panel-btn btn-confirm" id="mv-send-btn">Mô phỏng</button>
         </div>
-        <div class="action-btns"><button class="panel-btn btn-retry" id="mv-mic-btn">🎙️ Bật Mic</button></div>
+        <div class="action-btns">
+            <button class="panel-btn btn-retry" id="mv-mic-btn">🎙️ Bật Mic</button>
+        </div>
         <button class="panel-btn btn-export" id="btnExportWhatIf">📥 Tải Báo Cáo Đa Vũ Trụ</button>
     </div>
 
@@ -190,13 +207,19 @@
         <div class="lang-vi">
             <h2 class="overlay-title">Lê Hoàn</h2>
             <div class="overlay-content">
-                <p><strong>Lê Hoàn:</strong> Lê Hoàn (941 – 1005), miếu hiệu Lê Đại Hành, là hoàng đế khai sáng nhà Tiền Lê...</p>
+                <p><strong>Lê Hoàn:</strong> Lê Hoàn (941 – 1005), miếu hiệu Lê Đại Hành, là hoàng đế khai sáng nhà Tiền Lê, trị vì nước Đại Cồ Việt từ năm 980 đến 1005. Ông nổi bật trong lịch sử Việt Nam với vai trò củng cố nền độc lập sau thời Đinh, đánh bại nhà Tống và bình Chiêm, đặt nền móng cho nhà nước phong kiến tập quyền đầu tiên.</p>
+                <p><strong>Sự nghiệp và trị vì:</strong> Sinh tại làng Trung Lập (nay thuộc huyện Thọ Xuân, Thanh Hóa), Lê Hoàn xuất thân nghèo, mồ côi sớm và được một viên quan họ Lê nhận nuôi. Trưởng thành trong thời loạn 12 sứ quân, ông theo Đinh Bộ Lĩnh dẹp loạn, dần thăng đến chức Thập đạo tướng quân, chỉ huy toàn quân quốc gia. Sau khi Đinh Tiên Hoàng và Đinh Liễn bị sát hại (979), Lê Hoàn giữ chức nhiếp chính và năm 980 được Thái hậu Dương Vân Nga trao ngôi, lấy niên hiệu Thiên Phúc, mở đầu triều Tiền Lê.</p>
+                <p><strong>Chiến công hiển hách:</strong> Trong 24 năm trị vì, ông hai lần lãnh đạo chiến thắng ngoại xâm: năm 981 đánh tan quân Tống trên sông Bạch Đằng và năm 982 chinh phạt Champa (Chiêm Thành), củng cố chủ quyền phương Nam. Ông đồng thời thực thi chính sách ngoại giao khôn khéo với nhà Tống, vừa thần phục hình thức vừa giữ độc lập thực tế.</p>
+                <p><strong>Xây dựng và quản trị:</strong> Lê Hoàn tổ chức lại bộ máy hành chính, chia nước thành đơn vị địa giới rõ ràng, trọng dụng tăng lữ và nho sĩ làm cố vấn. Ông phát động khai hoang, đào kênh mương, đúc tiền Thiên Phúc và phục hưng lễ Tịch Điền (987) để khuyến nông – một nghi lễ được các triều sau duy trì. Dưới thời ông, kinh đô Hoa Lư được mở rộng, xây dựng các cung điện và chùa chiền như Nhất Trụ Tự, biểu tượng sự phát triển văn hóa Phật giáo.</p>
+                <p><strong>Di sản và tưởng niệm:</strong> Lê Hoàn mất năm 1005 tại điện Trường Xuân (Hoa Lư). Sau khi qua đời, ông được tôn hiệu Lê Đại Hành Hoàng đế và suy tôn là Anh hùng dân tộc. Tại quê nhà Thanh Hóa có đền thờ Lê Hoàn, di tích quốc gia đặc biệt, với lễ hội đền được công nhận là Di sản văn hóa phi vật thể quốc gia năm 2023. Công lao “phá Tống, bình Chiêm, khai quốc” khiến ông được sử gia Ngô Sĩ Liên ca ngợi là “bậc anh hùng nhất đời”.</p>
             </div>
         </div>
         <div class="lang-en" style="display: none;">
             <h2 class="overlay-title">Le Hoan</h2>
             <div class="overlay-content">
-                <p><strong>Le Hoan:</strong> Le Hoan (941–1005), posthumously honored as Le Dai Hanh...</p>
+                <p><strong>Le Hoan:</strong> Le Hoan (941–1005), posthumously honored as Le Dai Hanh, was the founding emperor of the Early Le dynasty, ruling Dai Co Viet from 980 to 1005. He is a prominent figure in Vietnamese history, celebrated for consolidating national independence.</p>
+                <p><strong>Career and Reign:</strong> Born in Trung Lap village, Le Hoan was orphaned at an early age. He joined Dinh Bo Linh’s forces to suppress the rebellion, eventually rising to the rank of Supreme Commander. Following the assassination of Emperor Dinh Tien Hoang in 979, Le Hoan served as regent before taking the throne in 980.</p>
+                <p><strong>Military Victories:</strong> During his 24-year reign, he successfully defeated the Chinese Song dynasty forces at the Bach Dang River in 981, and launched a military campaign against Champa in 982 to secure the southern border.</p>
             </div>
         </div>
     </div>
@@ -206,13 +229,15 @@
         <div class="lang-vi">
             <h2 class="overlay-title">Hướng Dẫn Tương Tác</h2>
             <div class="overlay-content">
-                <ul><li><strong>Xoay mô hình:</strong> Nhấn giữ chuột trái (hoặc vuốt 1 ngón tay).</li><li><strong>Phóng to / Thu nhỏ:</strong> Cuộn nút chuột (hoặc dùng 2 ngón tay).</li></ul>
+                <p>Quý vị vui lòng thao tác theo chỉ dẫn dưới đây để quan sát mô hình:</p>
+                <ul><li><strong>Xoay mô hình:</strong> Nhấn giữ chuột trái (hoặc vuốt 1 ngón tay) và kéo sang các hướng.</li><li><strong>Phóng to / Thu nhỏ:</strong> Cuộn nút cuộn chuột (hoặc dùng 2 ngón tay thu phóng).</li><li><strong>Di chuyển:</strong> Nhấn giữ chuột phải và kéo để dịch chuyển vị trí trung tâm.</li></ul>
             </div>
         </div>
         <div class="lang-en" style="display: none;">
             <h2 class="overlay-title">Interaction Guide</h2>
             <div class="overlay-content">
-                <ul><li><strong>Rotate Model:</strong> Left-click and drag.</li><li><strong>Zoom:</strong> Use the scroll wheel.</li></ul>
+                <p>Please follow the instructions below to interact with the 3D model:</p>
+                <ul><li><strong>Rotate Model:</strong> Left-click and drag.</li><li><strong>Zoom In / Out:</strong> Use the scroll wheel.</li><li><strong>Pan View:</strong> Right-click and drag.</li></ul>
             </div>
         </div>
     </div>
@@ -232,61 +257,30 @@
         const overlayDetail = document.querySelector('#overlayDetail'); const overlayGuide = document.querySelector('#overlayGuide');
         
         const audioVn = document.querySelector('#audio-vn'); const audioEn = document.querySelector('#audio-en'); const sweepAudio = document.querySelector('#sweep-audio'); const blowAudio = document.querySelector('#blow-audio'); 
-        
-        // Cài đặt âm lượng mặc định
         audioVn.volume = 0.15; audioEn.volume = 0.15; sweepAudio.volume = 0.6; blowAudio.volume = 0.8; 
         
         let selectedLang = 'vi'; let playerName = "Người lạ"; let isMainExperienceStarted = false;
-        let currentAbortController = null; let rpAbortController = null; let typingInterval = null; 
-        let currentTTSAudio = new Audio(); // Giữ nguyên instance
+        let currentAbortController = null; let rpAbortController = null; let typingInterval = null; let currentTTSAudio = new Audio();
         
         let qaHistory = []; let mvHistory = []; let rpHistory = []; let rpTurn = 1; let progressInterval = null;
 
         window.onload = () => { let savedName = localStorage.getItem('lehoan_player_name'); if(savedName) playerNameInput.value = savedName; };
 
-        // ================= AUDIO MANAGER (TRÁI TIM QUẢN LÝ NHẠC) =================
-        // Hàm này đảm bảo nhạc nền đúng ngôn ngữ được phát, và ngắt khi có popup
-        function playBGM() {
-            audioVn.pause(); audioEn.pause(); // Ngắt cả 2 trước
-            if (!isMainExperienceStarted) return;
-            
-            // Nếu có bất kỳ bảng AI nào đang mở, không phát nhạc nền để tránh đè giọng TTS
-            const hasActivePanels = document.querySelectorAll('.game-panel.active').length > 0;
-            if (hasActivePanels) return;
-
-            if (selectedLang === 'vi') {
-                audioVn.play().catch(e => console.log("BGM play blocked by browser"));
-            } else {
-                audioEn.play().catch(e => console.log("BGM play blocked by browser"));
-            }
-        }
-
-        // Tối ưu hóa hàm unlock âm thanh trên Mobile
-        function unlockAudioSafely(audioElement) {
-            audioElement.muted = true;
-            let playPromise = audioElement.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    audioElement.pause();
-                    audioElement.muted = false;
-                    audioElement.currentTime = 0;
-                }).catch(err => console.log("Unlock failed: ", err));
-            }
-        }
-
-        // ================= XỬ LÝ CLICK BẮT ĐẦU =================
-        startBtn.addEventListener('click', () => {
+        // ================= XỬ LÝ CLICK BẮT ĐẦU (ĐÃ SỬA MƯỢT VÀ TẮT ÂM HOÀN TOÀN) =================
+        startBtn.addEventListener('click', async () => {
             if(playerNameInput.value.trim() !== "") { playerName = playerNameInput.value.trim(); localStorage.setItem('lehoan_player_name', playerName); }
             
+            // Hiển thị ngay lớp Mật thư ở dưới nền trước khi Intro biến mất (giúp mượt mà không lộ 3D)
             scrollOverlay.style.display = 'flex';
             scrollOverlay.style.opacity = '1';
 
-            // Mở khóa an toàn theo chuẩn Mobile Safari/Chrome
-            unlockAudioSafely(sweepAudio);
-            unlockAudioSafely(blowAudio);
-            unlockAudioSafely(audioVn);
-            unlockAudioSafely(audioEn);
-            unlockAudioSafely(currentTTSAudio);
+            // Khóa mồm (Muted/Volume=0) âm thanh để mở khóa Autoplay mà không bị lọt tiếng
+            sweepAudio.volume = 0; blowAudio.volume = 0; currentTTSAudio.volume = 0; audioVn.volume = 0; audioEn.volume = 0;
+            try { sweepAudio.play().then(()=>{sweepAudio.pause(); sweepAudio.volume = 0.6;}); } catch(e){}
+            try { blowAudio.play().then(()=>{blowAudio.pause(); blowAudio.volume = 0.8;}); } catch(e){}
+            try { currentTTSAudio.play().then(()=>{currentTTSAudio.pause(); currentTTSAudio.volume = 1.0;}); } catch(e){}
+            try { audioVn.play().then(()=>{audioVn.pause(); audioVn.volume = 0.15;}); } catch(e){}
+            try { audioEn.play().then(()=>{audioEn.pause(); audioEn.volume = 0.15;}); } catch(e){}
             
             introScreen.style.opacity = '0'; 
             setTimeout(() => { 
@@ -312,62 +306,23 @@
         }
         
         brushBtn.addEventListener('click', () => { enableBrushMode(); }); 
+        function enableBrushMode() { if(isBrushingMode) return; isBrushingMode = true; brushBtn.style.display = 'none'; if(blowAnimationFrame) cancelAnimationFrame(blowAnimationFrame); let isDrawing = false; let lastX = 0, lastY = 0; dustCanvas.addEventListener('mousedown', (e) => { isDrawing = true; lastX = e.offsetX; lastY = e.offsetY; }); dustCanvas.addEventListener('mouseup', () => isDrawing = false); dustCanvas.addEventListener('mousemove', (e) => { if(isDrawing && !isRevealed) { eraseCanvasSoftly(lastX, lastY, e.offsetX, e.offsetY); lastX = e.offsetX; lastY = e.offsetY; } }); dustCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const rect = dustCanvas.getBoundingClientRect(); lastX = e.touches[0].clientX - rect.left; lastY = e.touches[0].clientY - rect.top; }); dustCanvas.addEventListener('touchend', () => isDrawing = false); dustCanvas.addEventListener('touchmove', (e) => { if(isDrawing && !isRevealed) { e.preventDefault(); const rect = dustCanvas.getBoundingClientRect(); const currentX = e.touches[0].clientX - rect.left; const currentY = e.touches[0].clientY - rect.top; eraseCanvasSoftly(lastX, lastY, currentX, currentY); lastX = currentX; lastY = currentY; } }, { passive: false }); }
         
-        function enableBrushMode() { 
-            if(isBrushingMode) return; isBrushingMode = true; brushBtn.style.display = 'none'; 
-            if(blowAnimationFrame) cancelAnimationFrame(blowAnimationFrame); 
-            let isDrawing = false; let lastX = 0, lastY = 0; 
-            dustCanvas.addEventListener('mousedown', (e) => { isDrawing = true; lastX = e.offsetX; lastY = e.offsetY; }); 
-            dustCanvas.addEventListener('mouseup', () => isDrawing = false); 
-            dustCanvas.addEventListener('mousemove', (e) => { if(isDrawing && !isRevealed) { eraseCanvasSoftly(lastX, lastY, e.offsetX, e.offsetY); lastX = e.offsetX; lastY = e.offsetY; } }); 
-            
-            dustCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const rect = dustCanvas.getBoundingClientRect(); lastX = e.touches[0].clientX - rect.left; lastY = e.touches[0].clientY - rect.top; }); 
-            dustCanvas.addEventListener('touchend', () => isDrawing = false); 
-            dustCanvas.addEventListener('touchmove', (e) => { 
-                if(isDrawing && !isRevealed) { 
-                    e.preventDefault(); 
-                    const rect = dustCanvas.getBoundingClientRect(); 
-                    const currentX = e.touches[0].clientX - rect.left; const currentY = e.touches[0].clientY - rect.top; 
-                    eraseCanvasSoftly(lastX, lastY, currentX, currentY); 
-                    lastX = currentX; lastY = currentY; 
-                } 
-            }, { passive: false }); 
-        }
-        
-        // Tối ưu tránh loạn âm thanh khi quét nhanh
         function eraseCanvasSoftly(x1, y1, x2, y2) { 
             ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 80; ctx.shadowBlur = 30; ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.shadowBlur = 0; spawnParticles(x2, y2, 3, false); 
-            if(sweepAudio.paused) { 
-                sweepAudio.currentTime = 0; 
-                sweepAudio.play().catch(e=>console.log(e)); 
-            } 
+            if(sweepAudio.paused || sweepAudio.currentTime > 0.4) { sweepAudio.currentTime = 0; sweepAudio.play().catch(e=>{}); } 
             checkCanvasCompletion(); 
         }
-
         function blowAwayDust() { 
             ctx.globalCompositeOperation = 'destination-out'; ctx.shadowBlur = 50; ctx.shadowColor = 'rgba(0,0,0,1)'; let randX = Math.random() * dustCanvas.width; let randY = Math.random() * dustCanvas.height; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(randX, randY, 60 + Math.random()*80, 0, Math.PI * 2); ctx.fill(); } ctx.shadowBlur = 0; spawnParticles(randX, randY, 15, true); 
-            if(blowAudio.paused) { 
-                blowAudio.currentTime = 0; 
-                blowAudio.play().catch(e=>console.log(e)); 
-            } 
+            if(blowAudio.paused || blowAudio.currentTime > 0.4) { blowAudio.currentTime = 0; blowAudio.play().catch(e=>{}); } 
             checkCanvasCompletion(); 
         }
-
-        let checkThrottle = 0; 
-        function checkCanvasCompletion() { 
-            checkThrottle++; if(checkThrottle % 10 !== 0) return; 
-            const imgData = ctx.getImageData(0, 0, dustCanvas.width, dustCanvas.height).data; 
-            let transparentCount = 0; 
-            for (let i = 3; i < imgData.length; i += 4) { if (imgData[i] < 128) transparentCount++; } 
-            if ((transparentCount / (imgData.length / 4)) * 100 > 50 && !isRevealed) { isRevealed = true; completeReveal(); } 
-        }
+        let checkThrottle = 0; function checkCanvasCompletion() { checkThrottle++; if(checkThrottle % 10 !== 0) return; const imgData = ctx.getImageData(0, 0, dustCanvas.width, dustCanvas.height).data; let transparentCount = 0; for (let i = 3; i < imgData.length; i += 4) { if (imgData[i] < 128) transparentCount++; } if ((transparentCount / (imgData.length / 4)) * 100 > 50 && !isRevealed) { isRevealed = true; completeReveal(); } }
         
         function completeReveal() { 
             dustCanvas.style.opacity = '0'; instructionBox.style.opacity = '0'; brushBtn.style.opacity = '0'; secretText.style.opacity = '1'; 
-            setTimeout(() => { 
-                scrollOverlay.style.opacity = '0'; 
-                setTimeout(() => { scrollOverlay.style.display = 'none'; startMainExperience(); }, 1500); 
-            }, 4000); // Rút ngắn chờ đợi một chút cho mượt
+            setTimeout(() => { scrollOverlay.style.opacity = '0'; setTimeout(() => { scrollOverlay.style.display = 'none'; startMainExperience(); }, 1500); }, 5000); 
         }
         
         function startMainExperience() { 
@@ -376,34 +331,29 @@
             document.getElementById('top-controls').classList.add('show'); 
             langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; 
             model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; 
-            playBGM(); // Gọi hàm tổng quản lý nhạc
+            if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); 
         }
         
         restartBtn.addEventListener('click', () => { window.location.reload(); });
 
         // ================= HỆ THỐNG QUẢN LÝ CỬA SỔ & NGÔN NGỮ =================
+        function closeAllPopups() {
+            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+            overlayDetail.classList.remove('active'); overlayGuide.classList.remove('active');
+            detailBtn.classList.remove('active-state'); guideBtn.classList.remove('active-state'); qaBtn.classList.remove('active-state'); mvBtn.classList.remove('active-state'); roleplayBtn.classList.remove('active-state');
+            body.classList.remove('info-active'); stopAllAITasks();
+            if (isMainExperienceStarted && audioVn.paused && audioEn.paused) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
+        }
+
+        window.closeAllPopups = closeAllPopups; // Cấp quyền gọi toàn cầu cho nút X
+
         function stopAllAITasks() { 
-            if (currentTTSAudio) { 
-                currentTTSAudio.pause(); 
-                currentTTSAudio.removeAttribute('src'); // Gỡ URL cũ triệt để
-                currentTTSAudio.load(); 
-            } 
+            if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } 
             if (typingInterval) { clearInterval(typingInterval); typingInterval = null; } 
             if (currentAbortController) { currentAbortController.abort(); } 
             if (rpAbortController) { rpAbortController.abort(); }
             stopProgressBar('qa-progress', 'qa-bar'); stopProgressBar('mv-progress', 'mv-bar'); stopProgressBar('rp-progress', 'rp-bar');
         }
-
-        function closeAllPopups() {
-            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
-            overlayDetail.classList.remove('active'); overlayGuide.classList.remove('active');
-            detailBtn.classList.remove('active-state'); guideBtn.classList.remove('active-state'); qaBtn.classList.remove('active-state'); mvBtn.classList.remove('active-state'); roleplayBtn.classList.remove('active-state');
-            body.classList.remove('info-active'); 
-            stopAllAITasks();
-            playBGM(); // Phục hồi nhạc nền sau khi đóng cửa sổ
-        }
-
-        window.closeAllPopups = closeAllPopups;
 
         document.querySelectorAll('.lang-btn').forEach(btn => { 
             btn.addEventListener('click', () => { 
@@ -414,13 +364,11 @@
         });
 
         langToggleBtn.addEventListener('click', () => { 
-            stopAllAITasks(); 
-            selectedLang = selectedLang === 'vi' ? 'en' : 'vi'; 
-            langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; 
+            audioVn.pause(); audioEn.pause(); stopAllAITasks(); selectedLang = selectedLang === 'vi' ? 'en' : 'vi'; langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; 
             detailBtn.textContent = dict[selectedLang].detailBtn; guideBtn.textContent = dict[selectedLang].guideBtn; qaBtn.textContent = dict[selectedLang].qaBtn; mvBtn.textContent = dict[selectedLang].mvBtn; roleplayBtn.textContent = dict[selectedLang].roleplayBtn;
             document.querySelectorAll('.lang-vi').forEach(el => el.style.display = (selectedLang === 'vi') ? 'block' : 'none'); document.querySelectorAll('.lang-en').forEach(el => el.style.display = (selectedLang === 'en') ? 'block' : 'none'); 
             audioVn.currentTime = 0; audioEn.currentTime = 0; 
-            playBGM(); // Update nhạc chuẩn ngôn ngữ
+            if (isMainExperienceStarted) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         });
 
         detailBtn.addEventListener('click', (e) => { e.stopPropagation(); const wasActive = overlayDetail.classList.contains('active'); closeAllPopups(); if (!wasActive) { overlayDetail.classList.add('active'); detailBtn.classList.add('active-state'); detailBtn.textContent = dict[selectedLang].closeBtn; body.classList.add('info-active'); } });
@@ -438,21 +386,21 @@
             arraySug.forEach(sug => { let btn = document.createElement('button'); btn.className = 'prompt-chip'; btn.textContent = sug; btn.onclick = (e) => { e.stopPropagation(); document.getElementById(inputId).value = sug; sendToAI(sug, endpointMode); }; container.appendChild(btn); });
         }
 
-        // ================= 1. AI HỎI ĐÁP =================
+        // ================= 1. AI HỎI ĐÁP (VÀNG) =================
         qaBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause(); // Tắt nhạc để nghe AI rõ hơn
+            e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause();
             qaBtn.classList.add('active-state'); document.getElementById('qa-panel').classList.add('active');
             document.getElementById('qa-status').textContent = `Chào ${playerName}, cần thần tra cứu lịch sử gì?`;
-            document.getElementById('qa-input').value = ""; document.getElementById('qa-result').textContent = "Nhấn nút Mic hoặc gõ câu hỏi vào ô bên dưới.";
+            document.getElementById('qa-input').value = ""; document.getElementById('qa-result').textContent = dict[selectedLang].placeholder;
             renderSuggestions(dict[selectedLang].qaPrompts, 'qa-prompts', 'qa-input', 'ask');
         });
 
         document.getElementById('qa-send-btn').addEventListener('click', (e) => { e.stopPropagation(); const txt = document.getElementById('qa-input').value.trim(); if(txt) sendToAI(txt, 'ask'); });
         document.getElementById('qa-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('qa-send-btn').click(); });
 
-        // ================= 2. ĐA VŨ TRỤ =================
+        // ================= 2. ĐA VŨ TRỤ (TÍM) =================
         mvBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause(); // Tắt nhạc
+            e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause();
             mvBtn.classList.add('active-state'); document.getElementById('mv-panel').classList.add('active');
             mvHistory = []; document.getElementById('mv-img-box').style.display = 'none'; document.getElementById('mv-stats').style.display = 'none';
             document.getElementById('mv-status').textContent = `🌌 ĐA VŨ TRỤ ĐÃ SẴN SÀNG, ${playerName.toUpperCase()}`;
@@ -463,6 +411,7 @@
         document.getElementById('mv-send-btn').addEventListener('click', (e) => { e.stopPropagation(); const txt = document.getElementById('mv-input').value.trim(); if(txt) sendToAI(txt, 'whatif'); });
         document.getElementById('mv-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('mv-send-btn').click(); });
 
+        // ================= HÀM GỬI LỜI NHẮN CHUNG CHO 1 & 2 =================
         async function sendToAI(question, mode) {
             const isMV = (mode === 'whatif');
             const resBox = isMV ? document.getElementById('mv-result') : document.getElementById('qa-result');
@@ -504,9 +453,9 @@
             } catch (error) { if (error.name === 'AbortError') return; stopProgressBar(progCon, progBar); resBox.textContent = "Mất kết nối mạng. Xin hãy thử lại!"; statBox.textContent = "Lỗi"; }
         }
 
-        // ================= 3. TRÒ CHƠI NHẬP VAI =================
+        // ================= 3. TRÒ CHƠI NHẬP VAI (ĐỎ) =================
         roleplayBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause(); // Tắt nhạc
+            e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause();
             roleplayBtn.classList.add('active-state'); document.getElementById('roleplay-panel').classList.add('active');
             rpHistory = []; rpTurn = 1; document.getElementById('rp-options-container').innerHTML = ''; document.getElementById('btnExportRoleplay').style.display = 'none'; 
             document.getElementById('rp-npc-text').textContent = "Đang triệu hồi các quần thần...";
@@ -549,7 +498,7 @@
             rpTurn++; document.getElementById('rp-npc-text').innerHTML = `<span style="color:#a894c2; font-weight:bold;">NPC:</span> `; await fetchAndPlayTTS(data.npcDialogue, 'alloy', null, document.getElementById('rp-npc-text'), "");
         }
 
-        // ================= HÀM XỬ LÝ ÂM THANH & CHỮ CHUNG (TTS) =================
+        // ================= HÀM XỬ LÝ ÂM THANH & CHỮ CHUNG =================
         async function fetchAndPlayTTS(textToSpeak, voiceType, statusElement, textElement, speakingMsg) {
             return new Promise(async (resolve) => {
                 if (!textToSpeak) { resolve(); return; }
@@ -562,19 +511,9 @@
                     const response = await fetch('https://backend-api-le-hoan.onrender.com/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: cleanText, voiceId: voiceType }), signal: currentAbortController.signal });
                     if (!response.ok) { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); return; }
 
-                    const audioBlob = await response.blob(); 
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    
-                    // Tắt tiếng triệt để trước khi gán tiếng mới
-                    if (currentTTSAudio) {
-                        currentTTSAudio.pause();
-                        currentTTSAudio.removeAttribute('src');
-                        currentTTSAudio.load();
-                    }
-                    if (typingInterval) clearInterval(typingInterval); 
-                    
-                    currentTTSAudio.src = audioUrl; 
-                    currentTTSAudio.volume = 1.0; 
+                    const audioBlob = await response.blob(); const audioUrl = URL.createObjectURL(audioBlob);
+                    if (currentTTSAudio) currentTTSAudio.pause(); if (typingInterval) clearInterval(typingInterval); 
+                    currentTTSAudio.src = audioUrl; currentTTSAudio.volume = 1.0; 
                     currentTTSAudio.onended = () => { if(statusElement) statusElement.textContent = "Hoàn tất."; resolve(); };
                     currentTTSAudio.onerror = () => { fallbackTypeWriter(textToSpeak, textElement, prefix, resolve); };
                     
@@ -595,6 +534,7 @@
             typingInterval = setInterval(() => { if (i < text.length) { element.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; resolve(); } }, 30);
         }
 
+        // Đóng các bảng khi nhấn bên ngoài
         window.addEventListener('click', (e) => { 
             if (!e.target.closest('.overlay-layer') && !e.target.closest('.game-panel') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#intro-screen')) { 
                 closeAllPopups(); 
