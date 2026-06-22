@@ -64,8 +64,9 @@
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; } 
         .text-input { flex: 1; background: rgba(0, 0, 0, 0.6); border-radius: 20px; padding: 10px 15px; color: #fff; font-family: 'Lora', serif; font-size: 0.95rem; outline: none; transition: all 0.3s; }
         .action-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-        .panel-btn { padding: 10px 20px; border-radius: 20px; font-family: 'Lora', serif; cursor: pointer; font-size: 0.9rem; border: none; } 
+        .panel-btn { padding: 10px 20px; border-radius: 20px; font-family: 'Lora', serif; cursor: pointer; font-size: 0.9rem; border: none; transition: all 0.3s;} 
         .btn-confirm { background: rgba(255,255,255,0.2); color: #fff; } 
+        .btn-confirm:hover { background: rgba(255,255,255,0.4); }
         .btn-export { background: #4CAF50; color: white; display: none; width: 100%; margin-top: 10px;}
         .prompt-suggestions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
         .prompt-chip { padding: 6px 14px; border-radius: 15px; font-size: 0.85rem; font-family: 'Lora', serif; cursor: pointer; transition: all 0.3s; }
@@ -266,15 +267,13 @@
 
         window.onload = () => { let savedName = localStorage.getItem('lehoan_player_name'); if(savedName) playerNameInput.value = savedName; };
 
-        // ================= XỬ LÝ CLICK BẮT ĐẦU (ĐÃ SỬA MƯỢT VÀ TẮT ÂM HOÀN TOÀN) =================
+        // ================= XỬ LÝ CLICK BẮT ĐẦU =================
         startBtn.addEventListener('click', async () => {
             if(playerNameInput.value.trim() !== "") { playerName = playerNameInput.value.trim(); localStorage.setItem('lehoan_player_name', playerName); }
             
-            // Hiển thị ngay lớp Mật thư ở dưới nền trước khi Intro biến mất (giúp mượt mà không lộ 3D)
             scrollOverlay.style.display = 'flex';
             scrollOverlay.style.opacity = '1';
 
-            // Khóa mồm (Muted/Volume=0) âm thanh để mở khóa Autoplay mà không bị lọt tiếng
             sweepAudio.volume = 0; blowAudio.volume = 0; currentTTSAudio.volume = 0; audioVn.volume = 0; audioEn.volume = 0;
             try { sweepAudio.play().then(()=>{sweepAudio.pause(); sweepAudio.volume = 0.6;}); } catch(e){}
             try { blowAudio.play().then(()=>{blowAudio.pause(); blowAudio.volume = 0.8;}); } catch(e){}
@@ -345,7 +344,7 @@
             if (isMainExperienceStarted && audioVn.paused && audioEn.paused) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         }
 
-        window.closeAllPopups = closeAllPopups; // Cấp quyền gọi toàn cầu cho nút X
+        window.closeAllPopups = closeAllPopups; 
 
         function stopAllAITasks() { 
             if (currentTTSAudio) { currentTTSAudio.pause(); currentTTSAudio.src = ""; } 
@@ -374,7 +373,6 @@
         detailBtn.addEventListener('click', (e) => { e.stopPropagation(); const wasActive = overlayDetail.classList.contains('active'); closeAllPopups(); if (!wasActive) { overlayDetail.classList.add('active'); detailBtn.classList.add('active-state'); detailBtn.textContent = dict[selectedLang].closeBtn; body.classList.add('info-active'); } });
         guideBtn.addEventListener('click', (e) => { e.stopPropagation(); const wasActive = overlayGuide.classList.contains('active'); closeAllPopups(); if (!wasActive) { overlayGuide.classList.add('active'); guideBtn.classList.add('active-state'); guideBtn.textContent = dict[selectedLang].closeBtn; body.classList.add('info-active'); } });
 
-        // MOBILE Cuộn bàn phím
         document.getElementById('qa-input').addEventListener('focus', () => { setTimeout(() => document.getElementById('qa-input').scrollIntoView({ behavior: 'smooth', block: 'center' }), 300); });
         document.getElementById('mv-input').addEventListener('focus', () => { setTimeout(() => document.getElementById('mv-input').scrollIntoView({ behavior: 'smooth', block: 'center' }), 300); });
 
@@ -386,19 +384,19 @@
             arraySug.forEach(sug => { let btn = document.createElement('button'); btn.className = 'prompt-chip'; btn.textContent = sug; btn.onclick = (e) => { e.stopPropagation(); document.getElementById(inputId).value = sug; sendToAI(sug, endpointMode); }; container.appendChild(btn); });
         }
 
-        // ================= 1. AI HỎI ĐÁP (VÀNG) =================
+        // ================= 1. AI HỎI ĐÁP =================
         qaBtn.addEventListener('click', (e) => {
             e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause();
             qaBtn.classList.add('active-state'); document.getElementById('qa-panel').classList.add('active');
             document.getElementById('qa-status').textContent = `Chào ${playerName}, cần thần tra cứu lịch sử gì?`;
-            document.getElementById('qa-input').value = ""; document.getElementById('qa-result').textContent = dict[selectedLang].placeholder;
+            document.getElementById('qa-input').value = ""; document.getElementById('qa-result').textContent = "Nhấn nút Mic hoặc gõ câu hỏi vào ô bên dưới.";
             renderSuggestions(dict[selectedLang].qaPrompts, 'qa-prompts', 'qa-input', 'ask');
         });
 
         document.getElementById('qa-send-btn').addEventListener('click', (e) => { e.stopPropagation(); const txt = document.getElementById('qa-input').value.trim(); if(txt) sendToAI(txt, 'ask'); });
         document.getElementById('qa-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('qa-send-btn').click(); });
 
-        // ================= 2. ĐA VŨ TRỤ (TÍM) =================
+        // ================= 2. ĐA VŨ TRỤ =================
         mvBtn.addEventListener('click', (e) => {
             e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause();
             mvBtn.classList.add('active-state'); document.getElementById('mv-panel').classList.add('active');
@@ -453,7 +451,7 @@
             } catch (error) { if (error.name === 'AbortError') return; stopProgressBar(progCon, progBar); resBox.textContent = "Mất kết nối mạng. Xin hãy thử lại!"; statBox.textContent = "Lỗi"; }
         }
 
-        // ================= 3. TRÒ CHƠI NHẬP VAI (ĐỎ) =================
+        // ================= 3. TRÒ CHƠI NHẬP VAI =================
         roleplayBtn.addEventListener('click', (e) => {
             e.stopPropagation(); closeAllPopups(); audioVn.pause(); audioEn.pause();
             roleplayBtn.classList.add('active-state'); document.getElementById('roleplay-panel').classList.add('active');
@@ -534,20 +532,106 @@
             typingInterval = setInterval(() => { if (i < text.length) { element.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; } else { clearInterval(typingInterval); typingInterval = null; resolve(); } }, 30);
         }
 
-        // Đóng các bảng khi nhấn bên ngoài
         window.addEventListener('click', (e) => { 
             if (!e.target.closest('.overlay-layer') && !e.target.closest('.game-panel') && !e.target.closest('#main-ui') && !e.target.closest('#top-controls') && !e.target.closest('#intro-screen')) { 
                 closeAllPopups(); 
             } 
         });
 
-        // ================= XUẤT BÁO CÁO (PDF) =================
+        // ================= XUẤT BÁO CÁO =================
         function exportPDF(contentHTML, fileName) {
             const container = document.getElementById('pdf-content-box'); container.innerHTML = `<h3>Người học: ${playerName}</h3>` + contentHTML;
             const element = document.getElementById('pdf-export-container'); const opt = { margin: 1, filename: fileName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }; html2pdf().set(opt).from(element).save();
         }
         document.getElementById('btnExportWhatIf').addEventListener('click', () => { let html = "<h4>Hành trình Đa vũ trụ</h4><ul>"; mvHistory.forEach(h => { html += `<li><b>${h.role === 'user' ? 'Hỏi' : 'Phân tích'}:</b> ${h.content}</li>`; }); html += "</ul>"; exportPDF(html, 'Bao_Cao_Da_Vu_Tru.pdf'); });
         document.getElementById('btnExportRoleplay').addEventListener('click', () => { let html = "<h4>Báo cáo Quyết sách Nhập vai</h4><ul>"; rpHistory.forEach(h => { if(h.role === 'user') html += `<li><b>Bệ hạ:</b> ${h.content}</li>`; else { let d = JSON.parse(h.content); html += `<li><b>Cục diện:</b> ${d.npcDialogue}</li>`; if(d.isGameOver) html += `<li><b>TỔNG KẾT:</b> ${d.endReason}</li>`; } }); html += "</ul>"; exportPDF(html, 'Hoc_Ba_Lich_Su.pdf'); });
+
+        // ================= TÍNH NĂNG NHẬN DIỆN GIỌNG NÓI (THỜI GIAN THỰC) =================
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false; // Chỉ nhận diện 1 đoạn dài liên tục đến khi ngừng nói
+            recognition.interimResults = true; // BẬT TÍNH NĂNG ĐỌC TỚI ĐÂU HIỆN TỚI ĐÓ
+
+            function setupMicButton(btnId, inputId) {
+                const btn = document.getElementById(btnId);
+                const input = document.getElementById(inputId);
+                const originalBg = btn.style.background;
+                const originalColor = btn.style.color;
+                let isRecording = false;
+                
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    // Nếu đang nghe, bấm thêm lần nữa để CHỐT
+                    if (isRecording) {
+                        recognition.stop();
+                        return;
+                    }
+
+                    recognition.lang = selectedLang === 'vi' ? 'vi-VN' : 'en-US';
+                    input.value = ""; // Xóa text cũ trước khi bắt đầu đọc mới
+                    
+                    try {
+                        recognition.start();
+                        isRecording = true;
+                        btn.innerHTML = selectedLang === 'vi' ? "⏹️ Chốt Câu Hỏi" : "⏹️ Stop & Confirm";
+                        btn.style.background = "#ff6b6b";
+                        btn.style.color = "#fff";
+                    } catch (err) {
+                        console.log("Mic đang bận.");
+                    }
+
+                    recognition.onresult = (event) => {
+                        let finalTranscript = '';
+                        let interimTranscript = '';
+                        
+                        // Lặp qua các kết quả trả về liên tục
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) {
+                                finalTranscript += event.results[i][0].transcript;
+                            } else {
+                                interimTranscript += event.results[i][0].transcript;
+                            }
+                        }
+                        // Gắn liền kết quả chốt + kết quả đang nghe dở dang vào ô Input
+                        input.value = finalTranscript + interimTranscript;
+                    };
+
+                    recognition.onspeechend = () => {
+                        recognition.stop();
+                    };
+
+                    recognition.onend = () => {
+                        isRecording = false;
+                        btn.innerHTML = "🎙️ Bật Mic";
+                        btn.style.background = originalBg;
+                        btn.style.color = originalColor;
+                        // Chữ đã nằm trong Input, lúc này người dùng sẽ TỰ BẤM NÚT GỬI/MÔ PHỎNG.
+                    };
+                    
+                    recognition.onerror = (event) => {
+                        console.error("Lỗi Mic:", event.error);
+                        isRecording = false;
+                        btn.innerHTML = "🎙️ Bật Mic";
+                        btn.style.background = originalBg;
+                        btn.style.color = originalColor;
+                        if(event.error === 'not-allowed') {
+                            alert(selectedLang === 'vi' ? "Vui lòng cấp quyền sử dụng Micro trên trình duyệt!" : "Please allow microphone access!");
+                        }
+                    };
+                });
+            }
+
+            setupMicButton('qa-mic-btn', 'qa-input');
+            setupMicButton('mv-mic-btn', 'mv-input');
+
+        } else {
+            const noMicMsg = () => alert(selectedLang === 'vi' ? "Trình duyệt của bạn không hỗ trợ nhận diện giọng nói." : "Speech recognition is not supported in this browser.");
+            document.getElementById('qa-mic-btn').addEventListener('click', noMicMsg);
+            document.getElementById('mv-mic-btn').addEventListener('click', noMicMsg);
+        }
     </script>
 </body>
 </html>
