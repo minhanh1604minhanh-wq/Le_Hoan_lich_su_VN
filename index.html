@@ -274,12 +274,16 @@
             scrollOverlay.style.display = 'flex';
             scrollOverlay.style.opacity = '1';
 
-            sweepAudio.volume = 0; blowAudio.volume = 0; currentTTSAudio.volume = 0; audioVn.volume = 0; audioEn.volume = 0;
-            try { sweepAudio.play().then(()=>{sweepAudio.pause(); sweepAudio.volume = 0.6;}); } catch(e){}
-            try { blowAudio.play().then(()=>{blowAudio.pause(); blowAudio.volume = 0.8;}); } catch(e){}
-            try { currentTTSAudio.play().then(()=>{currentTTSAudio.pause(); currentTTSAudio.volume = 1.0;}); } catch(e){}
-            try { audioVn.play().then(()=>{audioVn.pause(); audioVn.volume = 0.15;}); } catch(e){}
-            try { audioEn.play().then(()=>{audioEn.pause(); audioEn.volume = 0.15;}); } catch(e){}
+            // Bản vá lỗi âm thanh: Mở khóa bằng load thay vì play
+            sweepAudio.volume = 0.6; 
+            blowAudio.volume = 0.8; 
+            audioVn.volume = 0.15; 
+            audioEn.volume = 0.15;
+
+            sweepAudio.load(); 
+            blowAudio.load(); 
+            audioVn.load(); 
+            audioEn.load();
             
             introScreen.style.opacity = '0'; 
             setTimeout(() => { 
