@@ -274,11 +274,16 @@
         function startMainExperience() { isMainExperienceStarted = true; document.getElementById('main-ui').classList.add('show-ui'); document.getElementById('top-controls').classList.add('show'); langToggleBtn.textContent = selectedLang === 'vi' ? 'English' : 'Tiếng Việt'; model.setAttribute('camera-controls', ''); model.cameraOrbit = "0deg 75deg 100%"; if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         restartBtn.addEventListener('click', () => { window.location.reload(); });
 
-        // ================= HỆ THỐNG QUẢN LÝ CỬA SỔ & DỪNG TÁC VỤ AI =================
+        // ================= HỆ THỐNG QUẢN LÝ CỬA SỔ & DỪNG TÁC VỤ AI (ĐÃ SỬA LỖI NÚT ĐÓNG) =================
         function closeAllPopups() {
             document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
             overlayDetail.classList.remove('active'); overlayGuide.classList.remove('active');
             detailBtn.classList.remove('active-state'); guideBtn.classList.remove('active-state'); qaBtn.classList.remove('active-state'); mvBtn.classList.remove('active-state'); roleplayBtn.classList.remove('active-state');
+            
+            // SỬA LỖI: Trả lại tên gốc cho các nút sau khi tắt cửa sổ
+            detailBtn.textContent = dict[selectedLang].detailBtn;
+            guideBtn.textContent = dict[selectedLang].guideBtn;
+
             body.classList.remove('info-active'); stopAllAITasks();
             if (isMainExperienceStarted && audioVn.paused && audioEn.paused) { if (selectedLang === 'vi') audioVn.play().catch(e=>e); else audioEn.play().catch(e=>e); }
         }
@@ -544,13 +549,7 @@
                     </div>
                 </div>
             `;
-            const opt = { 
-                margin: 0.5, 
-                filename: fileName, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2, useCORS: true }, 
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
-            }; 
+            const opt = { margin: 0.5, filename: fileName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }; 
             html2pdf().set(opt).from(printContent).save();
         }
         
